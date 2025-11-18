@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Dashboard - KisanMandi</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-green: #2d5016;
+            --secondary-green: #4a7c59;
+            --harvest-gold: #f4a261;
+            --warm-brown: #8b4513;
+            --light-green: #90a955;
+            --cream: #faf9f7;
+            --error-red: #e74c3c;
+            --success-green: #27ae60;
+            --blue: #3498db;
+            --dark-gray: #2c3e50;
+            --light-gray: #95a5a6;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--cream) 0%, #f0f8f0 100%);
+            color: var(--dark-gray);
+            line-height: 1.6;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 280px;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+            color: white;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .logo i {
+            color: var(--harvest-gold);
+        }
+
+        .user-info {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            background: var(--harvest-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin: 0 auto 0.5rem;
+            color: white;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .user-type {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .nav-menu {
+            padding: 1rem 0;
+        }
+
+        .nav-item {
+            margin: 0.2rem 0;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left-color: var(--harvest-gold);
+        }
+
+        .nav-link i {
+            font-size: 1.2rem;
+            width: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
+        .top-bar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .breadcrumb {
+            color: var(--light-gray);
+            font-size: 0.9rem;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .notification-bell {
+            position: relative;
+            background: var(--cream);
+            border: none;
+            padding: 0.75rem;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .notification-bell:hover {
+            background: var(--primary-green);
+            color: white;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--error-red);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary-green);
+            cursor: pointer;
+        }
+
+        /* Dashboard Content */
+        .dashboard-content {
+            padding: 2rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--harvest-gold);
+        }
+
+        .stat-card.success::before { background: var(--success-green); }
+        .stat-card.primary::before { background: var(--primary-green); }
+        .stat-card.warning::before { background: var(--harvest-gold); }
+        .stat-card.info::before { background: var(--blue); }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stat-icon.success { background: var(--success-green); }
+        .stat-icon.primary { background: var(--primary-green); }
+        .stat-icon.warning { background: var(--harvest-gold); }
+        .stat-icon.info { background: var(--blue); }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--light-gray);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .trend-up {
+            color: var(--success-green);
+        }
+
+        .trend-down {
+            color: var(--error-red);
+        }
+
+        /* Main Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Cards */
+        .dashboard-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-green);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-action {
+            background: var(--harvest-gold);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-action:hover {
+            background: var(--warm-brown);
+            transform: translateY(-2px);
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Recent Activities */
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: white;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            color: var(--primary-green);
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-desc {
+            color: var(--light-gray);
+            font-size: 0.9rem;
+        }
+
+        .activity-time {
+            color: var(--light-gray);
+            font-size: 0.8rem;
+        }
+
+        /* Crop Listings */
+        .crop-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid #f0f0f0;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .crop-item:hover {
+            border-color: var(--light-green);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .crop-image {
+            width: 60px;
+            height: 60px;
+            background: var(--cream);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .crop-info {
+            flex: 1;
+        }
+
+        .crop-name {
+            font-weight: 600;
+            color: var(--primary-green);
+            margin-bottom: 0.25rem;
+        }
+
+        .crop-details {
+            color: var(--light-gray);
+            font-size: 0.9rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .crop-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--success-green);
+        }
+
+        .crop-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: rgba(39, 174, 96, 0.1);
+            color: var(--success-green);
+        }
+
+        .status-pending {
+            background: rgba(244, 162, 97, 0.1);
+            color: var(--harvest-gold);
+        }
+
+        .status-sold {
+            background: rgba(52, 152, 219, 0.1);
+            color: var(--blue);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .quick-action {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--dark-gray);
+        }
+
+        .quick-action:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            color: var(--dark-gray);
+        }
+
+        .quick-action-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--harvest-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin: 0 auto 1rem;
+        }
+
+        .quick-action-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .quick-action-desc {
+            color: var(--light-gray);
+            font-size: 0.9rem;
+        }
+
+        /* Weather Widget */
+        .weather-widget {
+            background: linear-gradient(135deg, var(--blue), #74b9ff);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .weather-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .weather-temp {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .weather-desc {
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .weather-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .weather-detail {
+            text-align: center;
+        }
+
+        .weather-detail-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .weather-detail-label {
+            opacity: 0.8;
+            font-size: 0.8rem;
+        }
+
+        /* Price Chart */
+        .price-chart {
+            height: 300px;
+            background: var(--cream);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--light-gray);
+            font-size: 1rem;
+            margin: 1rem 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .dashboard-content {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .top-bar {
+                padding: 1rem;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dashboard-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .stat-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .stat-card:nth-child(2) { animation-delay: 0.1s; }
+        .stat-card:nth-child(3) { animation-delay: 0.2s; }
+        .stat-card:nth-child(4) { animation-delay: 0.3s; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--cream);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--light-green);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-green);
+        }
+
+        .activity-icon.success { background: var(--success-green); }
+        .activity-icon.info { background: var(--blue); }
+        .activity-icon.warning { background: var(--harvest-gold); }
+        .activity-icon.default { background: var(--primary-green); }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-seedling"></i>
+                KisanMandi
+            </div>
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-name"><%= farmer.name %></div>
+                <div class="user-type">Farmer - <%= farmer.farmLocation || 'Location N/A' %></div>
+            </div>
+        </div>
+
+        <nav class="nav-menu">
+            <div class="nav-item">
+                <a href="/farmer/dashboard" class="nav-link active">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/farmer/crops" class="nav-link">
+                    <i class="fas fa-seedling"></i>
+                    <span>My Crops</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/farmer/listings" class="nav-link">
+                    <i class="fas fa-list"></i>
+                    <span>Active Listings</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/farmer/orders" class="nav-link">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Orders</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/farmer/transactions" class="nav-link">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Transactions</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/farmer/market-prices" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Market Prices</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/farmer/weather" class="nav-link">
+                    <i class="fas fa-cloud-sun"></i>
+                    <span>Weather</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/farmer/profile" class="nav-link">
+                    <i class="fas fa-user-cog"></i>
+                    <span>Profile</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/logout" class="nav-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Dashboard
+                </h1>
+                <div class="breadcrumb">Home / Dashboard</div>
+            </div>
+            <div class="top-actions">
+                <button class="notification-bell">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-content">
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card success">
+                    <div class="stat-header">
+                        <div class="stat-icon success">
+                            <i class="fas fa-seedling"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value"><%= stats.activeListings %></div>
+                    <div class="stat-label">Active Crop Listings</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+3 from last month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card primary">
+                    <div class="stat-header">
+                        <div class="stat-icon primary">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">₹<%= stats.totalRevenue.toLocaleString('en-IN') %></div>
+                    <div class="stat-label">Total Revenue</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+12% this month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card warning">
+                    <div class="stat-header">
+                        <div class="stat-icon warning">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value"><%= stats.pendingOrders %></div>
+                    <div class="stat-label">Pending Orders</div>
+                    <div class="stat-trend trend-down">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>-2 from yesterday</span>
+                    </div>
+                </div>
+
+                <div class="stat-card info">
+                    <div class="stat-header">
+                        <div class="stat-icon info">
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value"><%= stats.avgRating.toFixed(1) %></div>
+                    <div class="stat-label">Average Rating</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+0.2 this week</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <a href="/farmer/crops/add" class="quick-action">
+                    <div class="quick-action-icon">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div class="quick-action-title">Add New Crop</div>
+                    <div class="quick-action-desc">List your crops for sale</div>
+                </a>
+
+                <a href="/farmer/market-prices" class="quick-action">
+                    <div class="quick-action-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="quick-action-title">Check MSP Rates</div>
+                    <div class="quick-action-desc">View current market prices</div>
+                </a>
+
+                <a href="/farmer/orders" class="quick-action">
+                    <div class="quick-action-icon">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <div class="quick-action-title">Track Orders</div>
+                    <div class="quick-action-desc">Monitor your deliveries</div>
+                </a>
+
+                <a href="/farmer/profile" class="quick-action">
+                    <div class="quick-action-icon">
+                        <i class="fas fa-user-edit"></i>
+                    </div>
+                    <div class="quick-action-title">Update Profile</div>
+                    <div class="quick-action-desc">Manage your information</div>
+                </a>
+            </div>
+
+            <!-- Main Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Recent Crop Listings -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-seedling"></i>
+                            Recent Crop Listings
+                        </h3>
+                        <button class="card-action">
+                            <i class="fas fa-plus"></i>
+                            Add New
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <% if (recentCrops.length === 0) { %>
+                            <p>No crops listed yet. <a href="/farmer/crops/add">Add your first crop</a>.</p>
+                        <% } else { %>
+                            <% recentCrops.forEach(crop => { %>
+                            <div class="crop-item">
+                                <div class="crop-image">🌾</div>
+                                <div class="crop-info">
+                                <div class="crop-name"><%= crop.name %></div>
+                                <div class="crop-details">
+                                    <span><%= crop.quantity %> kg</span>
+                                    <% if (crop.grade) { %><span><%= crop.grade %></span><% } %>
+                                    <% if (crop.location) { %><span><%= crop.location %></span><% } %>
+                                </div>
+                                </div>
+                                <div class="crop-price">₹<%= crop.price %>/quintal</div>
+                                <div class="crop-status status-<%= crop.status || 'active' %>">
+                                <%= (crop.status || 'active').charAt(0).toUpperCase() + (crop.status || 'active').slice(1) %>
+                                </div>
+                            </div>
+                            <% }) %>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Sidebar Cards -->
+                <div>
+                    <!-- Weather Widget -->
+                    <div class="dashboard-card" style="margin-bottom: 1.5rem;">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-cloud-sun"></i>
+                                Weather Today
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="weather-widget">
+                                <div class="weather-icon">
+                                    <i class="fas fa-sun"></i>
+                                </div>
+                                <div class="weather-temp">28°C</div>
+                                <div class="weather-desc">Sunny & Clear</div>
+                                <div class="weather-details">
+                                    <div class="weather-detail">
+                                        <div class="weather-detail-value">65%</div>
+                                        <div class="weather-detail-label">Humidity</div>
+                                    </div>
+                                    <div class="weather-detail">
+                                        <div class="weather-detail-value">12 km/h</div>
+                                        <div class="weather-detail-label">Wind Speed</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activities -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                            <i class="fas fa-history"></i>
+                            Recent Activities
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <% recentActivities.forEach(act => { %>
+                            <div class="activity-item">
+                                <div class="activity-icon <%= act.type || 'default' %>">
+                                <i class="fas fa-<%= act.icon || 'check' %>"></i>
+                                </div>
+                                <div class="activity-content">
+                                <div class="activity-title"><%= act.title %></div>
+                                <div class="activity-desc"><%= act.desc %></div>
+                                </div>
+                                <div class="activity-time"><%= act.time %></div>
+                            </div>
+                            <% }) %>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market Insights -->
+            <div class="dashboard-card" style="margin-bottom: 2rem;">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-chart-line"></i>
+                        Market Insights & Price Trends
+                    </h3>
+                    <button class="card-action">
+                        <i class="fas fa-eye"></i>
+                        View All
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="price-chart">
+                        <div style="text-align: center;">
+                            <i class="fas fa-chart-line" style="font-size: 3rem; margin-bottom: 1rem; color: var(--harvest-gold);"></i>
+                            <div>Interactive price chart would be integrated here</div>
+                            <div style="font-size: 0.9rem; margin-top: 0.5rem;">Shows MSP trends, demand forecasts, and market analytics</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(e) {
+            const sidebar = document.getElementById('sidebar');
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            
+            if (window.innerWidth <= 768 && !sidebar.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                sidebar.classList.remove('active');
+            }
+        });
+
+        // Animated counters for stats
+        function animateCounter(element, target, duration = 2000) {
+            const start = 0;
+            const increment = target / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                
+                if (element.textContent.includes('₹')) {
+                    element.textContent = '₹' + Math.floor(current).toLocaleString();
+                } else if (element.textContent.includes('.')) {
+                    element.textContent = (current).toFixed(1);
+                } else {
+                    element.textContent = Math.floor(current);
+                }
+            }, 16);
+        }
+
+        // Initialize counters on page load
+        window.addEventListener('load', () => {
+            const statValues = document.querySelectorAll('.stat-value');
+            statValues.forEach(stat => {
+                const text = stat.textContent;
+                let target;
+                
+                if (text.includes('₹')) {
+                    target = parseInt(text.replace('₹', '').replace(',', ''));
+                } else if (text.includes('.')) {
+                    target = parseFloat(text);
+                } else {
+                    target = parseInt(text);
+                }
+                
+                stat.textContent = text.includes('₹') ? '₹0' : '0';
+                
+                setTimeout(() => {
+                    animateCounter(stat, target);
+                }, 500);
+            });
+        });
+
+        // Notification bell animation
+        document.querySelector('.notification-bell').addEventListener('click', function() {
+            alert('You have 3 new notifications:\n1. New order for Wheat\n2. Payment received\n3. Price alert for Rice');
+        });
+
+        // Card action buttons
+        document.querySelectorAll('.card-action').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const cardTitle = this.closest('.card-header').querySelector('.card-title').textContent.trim();
+                if (cardTitle.includes('Recent Crop Listings')) {
+                    window.location.href = '/farmer/crops/add';
+                } else if (cardTitle.includes('Market Insights')) {
+                    window.location.href = '/farmer/market-prices';
+                }
+            });
+        });
+
+        // Quick action clicks
+        document.querySelectorAll('.quick-action').forEach(action => {
+            action.addEventListener('click', function(e) {
+                if (!this.href) {
+                    e.preventDefault();
+                    const title = this.querySelector('.quick-action-title').textContent;
+                    alert('Navigating to: ' + title);
+                }
+            });
+        });
+
+        // Crop item interactions
+        document.querySelectorAll('.crop-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const cropName = this.querySelector('.crop-name').textContent;
+                const cropPrice = this.querySelector('.crop-price').textContent;
+                alert(`Crop Details:\nName: ${cropName}\nPrice: ${cropPrice}\nClick to view full details and manage listing.`);
+            });
+        });
+
+        // Activity item clicks
+        document.querySelectorAll('.activity-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const title = this.querySelector('.activity-title').textContent;
+                const desc = this.querySelector('.activity-desc').textContent;
+                alert(`Activity: ${title}\nDetails: ${desc}`);
+            });
+        });
+
+        // Real-time updates simulation
+        setInterval(() => {
+            // Simulate notification updates
+            const badge = document.querySelector('.notification-badge');
+            const currentCount = parseInt(badge.textContent);
+            if (Math.random() > 0.95) { // 5% chance every interval
+                badge.textContent = currentCount + 1;
+                badge.style.animation = 'pulse 0.5s ease';
+                setTimeout(() => {
+                    badge.style.animation = '';
+                }, 500);
+            }
+        }, 5000);
+
+        // Add pulse animation for notifications
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.2); }
+                100% { transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Sidebar link highlighting
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (this.getAttribute('href').startsWith('/')) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all links
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    // For demo purposes, show alert
+                    const linkText = this.querySelector('span').textContent;
+                    alert(`Navigating to: ${linkText}`);
+                }
+            });
+        });
+
+        // Weather widget click
+        document.querySelector('.weather-widget').addEventListener('click', function() {
+            alert('Weather Details:\nLocation: Chandigarh\nTemperature: 28°C\nCondition: Sunny & Clear\nHumidity: 65%\nWind: 12 km/h\nUV Index: 7 (High)\n\nTip: Good conditions for harvesting!');
+        });
+
+        // Responsive handling
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                document.getElementById('sidebar').classList.remove('active');
+            }
+        });
+
+        // Add loading states for better UX
+        function showLoading(element) {
+            const originalText = element.innerHTML;
+            element.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+            element.disabled = true;
+            
+            setTimeout(() => {
+                element.innerHTML = originalText;
+                element.disabled = false;
+            }, 1500);
+        }
+
+        // Apply loading to buttons
+        document.querySelectorAll('.card-action, .quick-action').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                if (this.classList.contains('card-action')) {
+                    showLoading(this);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

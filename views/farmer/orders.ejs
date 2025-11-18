@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Orders | Farmer Panel</title>
+
+<style>
+    body {
+        margin: 0;
+        background: #f0f4f7;
+        font-family: "Poppins", sans-serif;
+    }
+
+    .header {
+        background: #2ecc71;
+        padding: 18px 30px;
+        color: white;
+        font-size: 22px;
+        font-weight: 600;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .container {
+        width: 90%;
+        margin: 40px auto;
+    }
+
+    .back-btn {
+        background: #27ae60;
+        color: white;
+        padding: 10px 18px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 14px;
+        margin-bottom: 20px;
+        display: inline-block;
+        transition: 0.2s;
+    }
+    .back-btn:hover { background: #1f8e4f; }
+
+    table {
+        width: 100%;
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        border-collapse: collapse;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    }
+
+    th {
+        background: #27ae60;
+        color: white;
+        padding: 15px;
+        font-size: 16px;
+    }
+
+    td {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        font-size: 15px;
+    }
+
+    tr:hover td {
+        background: #f7fff9;
+    }
+
+    .status {
+        padding: 5px 10px;
+        border-radius: 6px;
+        color: white;
+        font-size: 13px;
+    }
+
+    .placed { background: #3498db; }
+    .processing { background: #f1c40f; }
+    .shipped { background: #9b59b6; }
+    .delivered { background: #2ecc71; }
+</style>
+</head>
+
+<body>
+
+<div class="header">📦 Orders</div>
+
+<div class="container">
+
+    <a href="/farmer/dashboard" class="back-btn">⬅ Back to Dashboard</a>
+
+    <table>
+        <tr>
+            <th>Crop</th>
+            <th>Buyer</th>
+            <th>Quantity (KG)</th>
+            <th>Total Price</th>
+            <th>Status</th>
+            <th>Date</th>
+        </tr>
+
+        <% if(orders.length === 0) { %>
+            <tr><td colspan="6" style="text-align:center;">No orders yet</td></tr>
+        <% } %>
+
+        <% orders.forEach(order => { %>
+            <tr>
+                <td><%= order.crop ? order.crop.name : "N/A" %></td>
+                <td><%= order.buyer ? order.buyer.name : "Unknown" %></td>
+                <td><%= order.quantity %></td>
+                <td>₹ <%= order.totalPrice %></td>
+                <td>
+                    <span class="status <%= order.status %>">
+                        <%= order.status %>
+                    </span>
+                </td>
+                <td><%= order.createdAt.toDateString() %></td>
+            </tr>
+        <% }) %>
+    </table>
+
+</div>
+
+</body>
+</html>

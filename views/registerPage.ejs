@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Register - KisanMandi</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    /* ---------- base ---------- */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root{
+      --primary-green:#2d5016;
+      --secondary-green:#4a7c59;
+      --harvest-gold:#f4a261;
+      --cream:#faf9f7;
+      --light-green:#90a955;
+      --error-red:#e74c3c;
+      --success-green:#27ae60;
+      --muted:#e0e0e0;
+    }
+    body{
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg,var(--cream) 0%, #e8f5e8 100%);
+      min-height:100vh;
+      color:#222;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* ---------- layout ---------- */
+    .container{
+      max-width:1200px;
+      margin:0 auto;
+      padding:2rem;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .register-card{
+      width:100%;
+      max-width:980px;
+      background:white;
+      border-radius:22px;
+      box-shadow:0 25px 50px rgba(0,0,0,.08);
+      overflow:hidden;
+      padding-bottom: 2rem;
+      min-height: 720px;
+    }
+    .card-header{
+      background: linear-gradient(135deg,var(--primary-green),var(--secondary-green));
+      color:white;
+      padding:2rem;
+      text-align:center;
+      position:relative;
+    }
+    .logo{ font-size:2.2rem; font-weight:700; display:flex; align-items:center; justify-content:center; gap:0.8rem; }
+    .logo i{ color:var(--harvest-gold); font-size:1.6rem; }
+    .subtitle{ opacity:.9; margin-top:.4rem; font-size:1.05rem; }
+
+    .card-body{ padding:3.5rem; }
+
+    /* ---------- progress bar ---------- */
+    .progress-bar{ display:flex; gap:0; align-items:center; margin-bottom:1.75rem; }
+    .progress-step{
+      flex:1; text-align:center; position:relative; padding:0 12px;
+    }
+    .progress-step::before{
+      content:"";
+      position:absolute;
+      top:50%;
+      left:0;
+      right:0;
+      height:3px;
+      transform:translateY(-50%);
+      background:var(--muted);
+      z-index:1;
+    }
+    /* NOTE: removed hiding of last-child; keep full line */
+    .progress-step .step-indicator{
+      width:44px; height:44px; border-radius:50%;
+      background:var(--muted); color:#888; display:inline-flex;
+      align-items:center; justify-content:center; margin:0 auto 0.4rem; z-index:2; position:relative; font-weight:700;
+    }
+    .progress-step.active .step-indicator{ background:var(--primary-green); color:#fff; }
+    .progress-step.completed .step-indicator{ background:var(--success-green); color:#fff; }
+    .progress-step.completed::before{ background:var(--success-green); }
+    .step-label{ font-size:.9rem; color:#666; }
+    .progress-step.active .step-label{ color:var(--primary-green); font-weight:600; }
+
+    /* ---------- form layout ---------- */
+    form{ width:100%; }
+    .form-step{ display:none; animation:fadeIn .35s ease both; }
+    .form-step.active{ display:block; }
+    @keyframes fadeIn{ from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none} }
+
+    .form-row{ display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-bottom:1rem; }
+    .form-group{ margin-bottom:1rem; position:relative; }
+    label{ display:block; margin-bottom:.4rem; color:var(--primary-green); font-weight:600; font-size:.95rem; }
+    .input-container{ position:relative; }
+    .form-control{
+      width:100%; padding:12px 12px 12px 40px; border-radius:10px; border:2px solid var(--muted);
+      background:#fafafa; font-size:1rem; transition:all .18s ease;
+    }
+    .form-control:focus{ outline:none; border-color:var(--primary-green); background:#fff; box-shadow:0 0 0 6px rgba(45,80,22,0.06); }
+    .input-icon{ position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#9aa; font-size:1rem; }
+
+    .password-toggle{ position:absolute; right:10px; top:50%; transform:translateY(-50%); cursor:pointer; color:#999; font-size:1rem; }
+    .password-toggle:hover{ color:var(--primary-green); }
+
+    .password-strength{ margin-top:.6rem; height:6px; background:#eee; border-radius:6px; overflow:hidden; }
+    .strength-bar{ height:100%; width:0%; transition:width .25s linear; border-radius:6px; }
+    .strength-weak{ background:var(--error-red); }
+    .strength-medium{ background:var(--harvest-gold); }
+    .strength-strong{ background:var(--success-green); }
+    .strength-text{ font-size:.85rem; margin-top:.35rem; color:#666; }
+
+    .user-type-selector{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem; }
+    .user-type{
+      padding:18px; border-radius:12px; border:2px solid var(--muted); text-align:center; cursor:pointer; transition:all .18s ease; background:#fff;
+    }
+    .user-type:hover{ transform:translateY(-4px); border-color:var(--light-green); box-shadow:0 8px 18px rgba(0,0,0,0.06); }
+    .user-type.selected{ background:linear-gradient(135deg,var(--primary-green),var(--secondary-green)); color:#fff; border-color:transparent; }
+    .user-type i{ display:block; font-size:1.6rem; margin-bottom:.5rem; color:var(--harvest-gold); }
+    .user-type.selected i{ color:#fff; }
+
+    .crop-selector{ display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:.6rem; margin-top:.6rem; }
+    .crop-item{ padding:10px; border-radius:8px; border:2px solid var(--muted); text-align:center; cursor:pointer; transition:all .15s ease; }
+    .crop-item:hover{ border-color:var(--light-green); transform:translateY(-3px); }
+    .crop-item.selected{ background:var(--primary-green); color:#fff; border-color:transparent; }
+
+    .business-types{ display:grid; grid-template-columns:1fr 1fr; gap:.6rem; margin-top:.6rem; }
+    .business-type{ padding:10px; border-radius:8px; border:2px solid var(--muted); text-align:center; cursor:pointer; }
+    .business-type.selected{ background:var(--primary-green); color:#fff; border-color:transparent; }
+
+    .checkbox-group{ display:flex; gap:.75rem; align-items:flex-start; margin-bottom:1rem; }
+    .checkbox-group input[type="checkbox"]{ width:18px; height:18px; accent-color:var(--primary-green); }
+
+    .form-navigation{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:1.25rem; }
+    .btn{ padding:10px 18px; border-radius:10px; font-weight:700; cursor:pointer; border:0; }
+    .btn-primary{ background:linear-gradient(135deg,var(--primary-green),var(--secondary-green)); color:#fff; }
+    .btn-secondary{ background:#f7f7f7; border:2px solid var(--muted); color:#333; }
+
+    #submitBtn{ display:none; width:100%; margin-top:1rem; }
+
+    .login-link{ text-align:center; margin-top:1.25rem; border-top:1px solid #eee; padding-top:16px; color:#666; }
+    .login-link a{ color:var(--primary-green); font-weight:700; text-decoration:none; }
+
+    .error-message{ color:var(--error-red); margin-top:.4rem; font-size:.88rem; display:none; }
+
+    /* responsive */
+    @media (max-width:860px){
+      .form-row{ grid-template-columns:1fr; }
+      .user-type-selector{ grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="register-card">
+      <div class="card-header">
+        <div class="logo">
+          <i class="fas fa-seedling"></i>
+          KisanMandi
+        </div>
+        <p class="subtitle">Join our community of farmers and buyers</p>
+      </div>
+
+      <div class="card-body">
+        <div class="progress-bar" aria-hidden="true">
+          <div class="progress-step" data-step="1">
+            <div class="step-indicator">1</div>
+            <div class="step-label">User Type</div>
+          </div>
+          <div class="progress-step" data-step="2">
+            <div class="step-indicator">2</div>
+            <div class="step-label">Basic Info</div>
+          </div>
+          <div class="progress-step" data-step="3">
+            <div class="step-indicator">3</div>
+            <div class="step-label">Complete</div>
+          </div>
+        </div>
+
+        <form id="registrationForm" method="POST" action="/register" novalidate>
+          <!-- step 1 -->
+          <div class="form-step active" data-step="1">
+            <h3 style="text-align:center; color:var(--primary-green); margin-bottom:1rem;">Choose Your Role</h3>
+            <div class="user-type-selector" role="radiogroup" aria-label="Choose role">
+              <div class="user-type" data-type="farmer" role="radio" tabindex="0" aria-checked="false">
+                <i class="fas fa-tractor"></i>
+                <h4 style="margin-bottom:.35rem;">I'm a Farmer</h4>
+                <p style="font-size:.92rem; opacity:.85;">Sell crops directly to buyers with fair pricing.</p>
+              </div>
+              <div class="user-type" data-type="buyer" role="radio" tabindex="0" aria-checked="false">
+                <i class="fas fa-store"></i>
+                <h4 style="margin-bottom:.35rem;">I'm a Buyer</h4>
+                <p style="font-size:.92rem; opacity:.85;">Purchase fresh produce directly from farmers.</p>
+              </div>
+            </div>
+            <input type="hidden" id="userType" name="userType" required>
+            <div class="error-message" id="userTypeError"></div>
+          </div>
+
+          <!-- step 2 -->
+          <div class="form-step" data-step="2">
+            <h3 style="text-align:center; color:var(--primary-green); margin-bottom:1rem;">Basic Information</h3>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="name">Full Name</label>
+                <div class="input-container">
+                  <i class="fas fa-user input-icon"></i>
+                  <input id="name" name="name" class="form-control" placeholder="Enter your full name" required>
+                </div>
+                <div class="error-message" id="nameError"></div>
+              </div>
+
+              <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <div class="input-container">
+                  <i class="fas fa-phone input-icon"></i>
+                  <input id="phone" name="phone" type="tel" class="form-control" maxlength="10" placeholder="10-digit phone" required>
+                </div>
+                <div class="error-message" id="phoneError"></div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="password">Create Password</label>
+                <div class="input-container password-container">
+                  <i class="fas fa-lock input-icon"></i>
+                  <input id="password" name="password" type="password" class="form-control" placeholder="At least 6 characters" minlength="6" required>
+                  <i class="fas fa-eye password-toggle" data-target="password" title="Show / hide password"></i>
+                </div>
+                <div class="password-strength" aria-hidden="true">
+                  <div class="strength-bar" id="strengthBar"></div>
+                </div>
+                <div class="strength-text" id="strengthText"></div>
+                <div class="error-message" id="passwordError"></div>
+              </div>
+
+              <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <div class="input-container password-container">
+                  <i class="fas fa-lock input-icon"></i>
+                  <input id="confirmPassword" name="confirmPassword" type="password" class="form-control" placeholder="Confirm password" required>
+                  <i class="fas fa-eye password-toggle" data-target="confirmPassword" title="Show / hide confirm password"></i>
+                </div>
+                <div class="error-message" id="confirmPasswordError"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- step 3 -->
+          <div class="form-step" data-step="3">
+            <h3 id="step3Title" style="text-align:center; color:var(--primary-green); margin-bottom:1rem;">Complete</h3>
+
+            <!-- Farmer fields -->
+            <div id="farmerFields" style="display:none;">
+              <div class="form-group">
+                <label for="farmLocation">Farm Location</label>
+                <div class="input-container">
+                  <i class="fas fa-map-marker-alt input-icon"></i>
+                  <input id="farmLocation" name="farmLocation" class="form-control" placeholder="Enter farm location">
+                </div>
+                <div class="error-message" id="farmLocationError"></div>
+              </div>
+
+              <div class="form-group">
+                <label>Primary Crops (select one or more)</label>
+                <div class="crop-selector" id="cropSelector">
+                  <div class="crop-item" data-crop="wheat">🌾 Wheat</div>
+                  <div class="crop-item" data-crop="rice">🍚 Rice</div>
+                  <div class="crop-item" data-crop="corn">🌽 Corn</div>
+                  <div class="crop-item" data-crop="tomatoes">🍅 Tomatoes</div>
+                  <div class="crop-item" data-crop="potatoes">🥔 Potatoes</div>
+                  <div class="crop-item" data-crop="onions">🧅 Onions</div>
+                </div>
+                <input type="hidden" id="primaryCrops" name="primaryCrops">
+                <div class="error-message" id="primaryCropsError"></div>
+              </div>
+            </div>
+
+            <!-- Buyer fields -->
+            <div id="buyerFields" style="display:none;">
+              <div class="form-group">
+                <label for="businessName">Business Name</label>
+                <div class="input-container">
+                  <i class="fas fa-building input-icon"></i>
+                  <input id="businessName" name="businessName" class="form-control" placeholder="Enter business name">
+                </div>
+                <div class="error-message" id="businessNameError"></div>
+              </div>
+
+              <div class="form-group">
+                <label>Business Type</label>
+                <div class="business-types">
+                  <div class="business-type" data-type="individual">Individual</div>
+                  <div class="business-type" data-type="organization">Organization</div>
+                </div>
+                <input type="hidden" id="businessType" name="businessType">
+                <div class="error-message" id="businessTypeError"></div>
+              </div>
+
+              <div class="form-group">
+                <label for="businessLocation">Business Location</label>
+                <div class="input-container">
+                  <i class="fas fa-map-marker-alt input-icon"></i>
+                  <input id="businessLocation" name="businessLocation" class="form-control" placeholder="Enter business location">
+                </div>
+                <div class="error-message" id="businessLocationError"></div>
+              </div>
+            </div>
+
+            <!-- Terms -->
+            <div class="checkbox-group" style="margin-top:8px;">
+              <input type="checkbox" id="terms" name="terms" />
+              <label for="terms">I agree to the <a href="/terms" target="_blank">Terms of Service</a> and <a href="/privacy" target="_blank">Privacy Policy</a></label>
+            </div>
+            <div class="error-message" id="termsError"></div>
+
+            <!-- Newsletter -->
+            <div class="checkbox-group">
+              <input type="checkbox" id="newsletter" name="newsletter" />
+              <label for="newsletter">Subscribe to newsletter for market updates</label>
+            </div>
+
+          </div>
+
+          <!-- navigation -->
+          <div class="form-navigation">
+            <button type="button" id="prevBtn" class="btn btn-secondary" style="display:none;">
+              <i class="fas fa-arrow-left"></i> Previous
+            </button>
+            <div style="flex:1"></div>
+            <button type="button" id="nextBtn" class="btn btn-primary">Next <i class="fas fa-arrow-right" style="margin-left:.5rem"></i></button>
+          </div>
+
+          <button type="button" id="submitBtn" class="btn btn-primary" style="display:none;">
+            <i class="fas fa-check"></i> Complete Registration
+          </button>
+        </form>
+
+        <div class="login-link">
+          Already have an account? <a href="/login">Sign In</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---------- state ----------
+    let currentStep = 1;
+    const totalSteps = 3;
+    let selectedUserType = '';
+    let selectedCrops = [];
+    let selectedBusinessType = '';
+
+    // ---------- helpers ----------
+    const $ = id => document.getElementById(id);
+    const qAll = sel => Array.from(document.querySelectorAll(sel));
+    function showError(id,msg){ const el=$(id); if(el){ el.textContent=msg; el.style.display='block'; } }
+    function hideError(id){ const el=$(id); if(el){ el.textContent=''; el.style.display='none'; } }
+    function clearAllErrors(){ qAll('.error-message').forEach(e => { e.style.display='none'; e.textContent=''; }); }
+
+    // ---------- init ----------
+    document.addEventListener('DOMContentLoaded', () => {
+      initRoleSelection();
+      initCropSelection();
+      initBusinessTypeSelection();
+      initPasswordToggles();
+      initStrengthMeter();
+      initNavButtons();
+      updateStepUI();
+    });
+
+    // ---------- role selection ----------
+    function initRoleSelection(){
+      qAll('.user-type').forEach(el=>{
+        el.addEventListener('click', ()=> selectRole(el.dataset.type, el));
+        el.addEventListener('keypress', e => { if(e.key==='Enter' || e.key===' ') selectRole(el.dataset.type, el); });
+      });
+    }
+    function selectRole(type, el){
+      selectedUserType = type;
+      $('userType').value = type;
+      // set aria
+      qAll('.user-type').forEach(u=>{ u.classList.remove('selected'); u.setAttribute('aria-checked','false'); });
+      el.classList.add('selected'); el.setAttribute('aria-checked','true');
+      hideError('userTypeError');
+      // show corresponding fields when step 3 active
+      if(currentStep===3) toggleRoleFields();
+    }
+
+    // ---------- crop selection ----------
+    function initCropSelection(){
+      qAll('.crop-item').forEach(ci=>{
+        ci.addEventListener('click', () => {
+          const name = ci.dataset.crop;
+          if(selectedCrops.includes(name)){
+            selectedCrops = selectedCrops.filter(x=>x!==name);
+            ci.classList.remove('selected');
+          } else {
+            selectedCrops.push(name);
+            ci.classList.add('selected');
+          }
+          $('primaryCrops').value = selectedCrops.join(',');
+          hideError('primaryCropsError');
+        });
+      });
+    }
+
+    // ---------- business type ----------
+    function initBusinessTypeSelection(){
+      qAll('.business-type').forEach(bt=>{
+        bt.addEventListener('click', () => {
+          qAll('.business-type').forEach(b=>b.classList.remove('selected'));
+          bt.classList.add('selected');
+          selectedBusinessType = bt.dataset.type || (bt.textContent || '').trim().toLowerCase();
+          $('businessType').value = selectedBusinessType;
+          hideError('businessTypeError');
+        });
+      });
+    }
+
+    // ---------- password toggle ----------
+    function initPasswordToggles(){
+      qAll('.password-toggle').forEach(icon=>{
+        icon.addEventListener('click', ()=>{
+          const target = icon.dataset.target;
+          const input = $(target);
+          if(!input) return;
+          input.type = input.type === 'password' ? 'text' : 'password';
+          icon.classList.toggle('fa-eye-slash');
+          icon.classList.toggle('fa-eye');
+        });
+      });
+    }
+
+    // ---------- strength meter ----------
+    function initStrengthMeter(){
+      const pass = $('password');
+      const bar = $('strengthBar');
+      const text = $('strengthText');
+      if(!pass) return;
+      pass.addEventListener('input', ()=>{
+        const p = pass.value;
+        let score = 0;
+        if(p.length >= 6) score++;
+        if(/[A-Z]/.test(p)) score++;
+        if(/[0-9]/.test(p)) score++;
+        if(/[^A-Za-z0-9]/.test(p)) score++;
+        bar.className = 'strength-bar'; // reset
+        if(score===0){ bar.style.width='0%'; text.textContent=''; }
+        else if(score<=1){ bar.classList.add('strength-weak'); bar.style.width='30%'; text.textContent='Weak'; }
+        else if(score===2){ bar.classList.add('strength-medium'); bar.style.width='66%'; text.textContent='Medium'; }
+        else { bar.classList.add('strength-strong'); bar.style.width='100%'; text.textContent='Strong'; }
+      });
+    }
+
+    // ---------- navigation ----------
+    function initNavButtons(){
+      $('nextBtn').addEventListener('click', ()=> {
+        clearAllErrors();
+        if(currentStep===1){
+          if(!selectedUserType){ showError('userTypeError','Please choose a role'); return; }
+        }
+        if(currentStep===2){
+          if(!validateStep2()) return;
+        }
+        if(currentStep<totalSteps){ currentStep++; updateStepUI(); }
+      });
+
+      $('prevBtn').addEventListener('click', ()=> {
+        if(currentStep>1){ currentStep--; updateStepUI(); }
+      });
+
+      $('submitBtn').addEventListener('click', ()=> {
+        clearAllErrors();
+        // run step validations
+        if(!selectedUserType){ showError('userTypeError','Please choose a role'); currentStep=1; updateStepUI(); return; }
+        if(!validateStep2()){ currentStep=2; updateStepUI(); return; }
+        if(!validateStep3()){ currentStep=3; updateStepUI(); return; }
+        // terms required
+        if(!$('terms').checked){ showError('termsError','You must accept Terms & Conditions'); return; }
+        // final submit
+        submitForm();
+      });
+    }
+
+    function updateStepUI(){
+      // progress
+      qAll('.progress-step').forEach((ps, idx)=>{
+        ps.classList.remove('active','completed');
+        const stepIndex = idx+1;
+        if(stepIndex < currentStep) ps.classList.add('completed');
+        else if(stepIndex === currentStep) ps.classList.add('active');
+      });
+      // form steps
+      qAll('.form-step').forEach((fs, idx)=> fs.classList.toggle('active', idx+1===currentStep));
+      // prev/next visibility
+      $('prevBtn').style.display = currentStep===1 ? 'none' : 'inline-block';
+      if(currentStep===totalSteps){
+        $('nextBtn').style.display='none';
+        $('submitBtn').style.display='inline-block';
+      } else {
+        $('nextBtn').style.display='inline-block';
+        $('submitBtn').style.display='none';
+      }
+      // role specific fields
+      toggleRoleFields();
+    }
+
+    function toggleRoleFields(){
+      if(selectedUserType === 'farmer'){
+        $('farmerFields').style.display='block';
+        $('buyerFields').style.display='none';
+        $('step3Title').textContent='Farm Details';
+      } else if(selectedUserType === 'buyer'){
+        $('farmerFields').style.display='none';
+        $('buyerFields').style.display='block';
+        $('step3Title').textContent='Business Details';
+      } else {
+        $('farmerFields').style.display='none';
+        $('buyerFields').style.display='none';
+        $('step3Title').textContent='Complete';
+      }
+    }
+
+    // ---------- validation ----------
+    function validateStep2(){
+      let ok = true;
+      const name = $('name').value.trim();
+      const phone = $('phone').value.trim();
+      const pass = $('password').value;
+      const confirm = $('confirmPassword').value;
+      if(!name){ showError('nameError','Name is required'); ok=false; }
+      if(!/^\d{10}$/.test(phone)){ showError('phoneError','Enter valid 10-digit phone'); ok=false; }
+      if(!pass || pass.length<6){ showError('passwordError','Password must be at least 6 chars'); ok=false; }
+      if(pass !== confirm){ showError('confirmPasswordError','Passwords do not match'); ok=false; }
+      return ok;
+    }
+
+    function validateStep3(){
+      if(selectedUserType==='farmer'){
+        // farmLocation optional? we keep it required per earlier code - but allow empty? Let's require for now
+        // If you want optional, remove this check.
+        // if(!$('farmLocation').value.trim()){ showError('farmLocationError','Please enter farm location'); return false; }
+        if(selectedCrops.length===0){ showError('primaryCropsError','Please select at least one crop'); return false; }
+      } else if(selectedUserType==='buyer'){
+        if(!$('businessName').value.trim()){ showError('businessNameError','Please enter business name'); return false; }
+        if(!selectedBusinessType){ showError('businessTypeError','Please select business type'); return false; }
+        if(!$('businessLocation').value.trim()){ showError('businessLocationError','Please enter business location'); return false; }
+      }
+      return true;
+    }
+
+    // ---------- submit ----------
+    function submitForm(){
+      // small safeguard: attach only visible fields or keep as is - form will submit all fields
+      // show a small UX change: disable submit to avoid double submissions
+      const btn = $('submitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Registering...';
+      document.getElementById('registrationForm').submit();
+    }
+
+    // ---------- accessibility: allow enter on inputs to move forward ----------
+    qAll('input').forEach(inp=>{
+      inp.addEventListener('keydown', e=>{
+        if(e.key === 'Enter'){
+          // if on step 2, attempt to move forward
+          if(currentStep < totalSteps){
+            e.preventDefault();
+            $('nextBtn').click();
+          } else {
+            e.preventDefault();
+            $('submitBtn').click();
+          }
+        }
+      });
+    });
+
+    // ensure business-type elements have data-type after DOM loaded
+    qAll('.business-type').forEach((el,i)=>{ if(!el.dataset.type) el.dataset.type = el.textContent.trim().toLowerCase(); });
+  </script>
+</body>
+</html>

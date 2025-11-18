@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buyer Dashboard - KisanMandi</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-green: #2d5016;
+            --secondary-green: #4a7c59;
+            --harvest-gold: #f4a261;
+            --warm-brown: #8b4513;
+            --light-green: #90a955;
+            --cream: #faf9f7;
+            --error-red: #e74c3c;
+            --success-green: #27ae60;
+            --blue: #3498db;
+            --dark-gray: #2c3e50;
+            --light-gray: #95a5a6;
+            --white: #ffffff;
+            --purple: #9b59b6;
+            --orange: #e67e22;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--cream) 0%, #f0f8f0 100%);
+            color: var(--dark-gray);
+            line-height: 1.6;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 280px;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+            color: white;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .logo i {
+            color: var(--harvest-gold);
+        }
+
+        .user-info {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            background: var(--blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin: 0 auto 0.5rem;
+            color: white;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .user-type {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .nav-menu {
+            padding: 1rem 0;
+        }
+
+        .nav-item {
+            margin: 0.2rem 0;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left-color: var(--harvest-gold);
+        }
+
+        .nav-link i {
+            font-size: 1.2rem;
+            width: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
+        .top-bar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .breadcrumb {
+            color: var(--light-gray);
+            font-size: 0.9rem;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .search-bar {
+            position: relative;
+            margin-right: 1rem;
+        }
+
+        .search-input {
+            padding: 0.5rem 2.5rem 0.5rem 1rem;
+            border: 2px solid var(--cream);
+            border-radius: 25px;
+            background: var(--cream);
+            transition: all 0.3s ease;
+            width: 250px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            background: white;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--light-gray);
+        }
+
+        .notification-bell {
+            position: relative;
+            background: var(--cream);
+            border: none;
+            padding: 0.75rem;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .notification-bell:hover {
+            background: var(--primary-green);
+            color: white;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--error-red);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary-green);
+            cursor: pointer;
+        }
+
+        /* Dashboard Content */
+        .dashboard-content {
+            padding: 2rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--blue);
+        }
+
+        .stat-card.success::before { background: var(--success-green); }
+        .stat-card.primary::before { background: var(--primary-green); }
+        .stat-card.warning::before { background: var(--harvest-gold); }
+        .stat-card.info::before { background: var(--blue); }
+        .stat-card.purple::before { background: var(--purple); }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stat-icon.success { background: var(--success-green); }
+        .stat-icon.primary { background: var(--primary-green); }
+        .stat-icon.warning { background: var(--harvest-gold); }
+        .stat-icon.info { background: var(--blue); }
+        .stat-icon.purple { background: var(--purple); }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--light-gray);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .trend-up {
+            color: var(--success-green);
+        }
+
+        .trend-down {
+            color: var(--error-red);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .quick-action {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--dark-gray);
+        }
+
+        .quick-action:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            color: var(--dark-gray);
+        }
+
+        .quick-action-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin: 0 auto 1rem;
+        }
+
+        .quick-action-icon.browse { background: var(--blue); }
+        .quick-action-icon.orders { background: var(--orange); }
+        .quick-action-icon.favorites { background: var(--error-red); }
+        .quick-action-icon.profile { background: var(--purple); }
+
+        .quick-action-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .quick-action-desc {
+            color: var(--light-gray);
+            font-size: 0.9rem;
+        }
+
+        /* Main Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Cards */
+        .dashboard-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-green);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-action {
+            background: var(--blue);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-action:hover {
+            background: var(--dark-gray);
+            transform: translateY(-2px);
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Available Crops */
+        .crop-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .crop-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid #f0f0f0;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .crop-item:hover {
+            border-color: var(--blue);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .crop-image {
+            width: 60px;
+            height: 60px;
+            background: var(--cream);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .crop-info {
+            flex: 1;
+        }
+
+        .crop-name {
+            font-weight: 600;
+            color: var(--primary-green);
+            margin-bottom: 0.25rem;
+        }
+
+        .crop-farmer {
+            color: var(--blue);
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .crop-location {
+            color: var(--light-gray);
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .crop-details {
+            text-align: right;
+        }
+
+        .crop-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--success-green);
+            margin-bottom: 0.25rem;
+        }
+
+        .crop-quantity {
+            color: var(--light-gray);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .crop-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .btn-primary-small {
+            background: var(--blue);
+            color: white;
+        }
+
+        .btn-primary-small:hover {
+            background: var(--dark-gray);
+        }
+
+        .btn-secondary-small {
+            background: var(--cream);
+            color: var(--dark-gray);
+        }
+
+        .btn-secondary-small:hover {
+            background: var(--light-gray);
+            color: white;
+        }
+
+        /* Recent Orders */
+        .order-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .order-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: white;
+        }
+
+        .order-content {
+            flex: 1;
+        }
+
+        .order-title {
+            font-weight: 600;
+            color: var(--primary-green);
+            margin-bottom: 0.25rem;
+        }
+
+        .order-desc {
+            color: var(--light-gray);
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .order-status {
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .status-delivered {
+            background: rgba(39, 174, 96, 0.1);
+            color: var(--success-green);
+        }
+
+        .status-processing {
+            background: rgba(52, 152, 219, 0.1);
+            color: var(--blue);
+        }
+
+        .status-shipped {
+            background: rgba(244, 162, 97, 0.1);
+            color: var(--harvest-gold);
+        }
+
+        .order-amount {
+            text-align: right;
+        }
+        .order-price {
+            font-weight: 600;
+            color: var(--primary-green);
+            font-size: 1.1rem;
+        }
+
+        .order-date {
+            color: var(--light-gray);
+            font-size: 0.8rem;
+        }
+
+        /* Market Trends */
+        .trend-item {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .trend-item:last-child {
+            border-bottom: none;
+        }
+
+        .trend-crop {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex: 1;
+        }
+
+        .trend-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            background: var(--cream);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .trend-name {
+            font-weight: 600;
+            color: var(--primary-green);
+        }
+
+        .trend-price {
+            font-weight: 700;
+            color: var(--success-green);
+            margin-right: 1rem;
+        }
+
+        .trend-change {
+            font-size: 0.8rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .trend-up-bg {
+            background: rgba(39, 174, 96, 0.1);
+            color: var(--success-green);
+        }
+
+        .trend-down-bg {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--error-red);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-input {
+                width: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .dashboard-content {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .top-bar {
+                padding: 1rem;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .search-bar {
+                margin: 0;
+            }
+
+            .search-input {
+                width: 150px;
+            }
+
+            .top-actions {
+                gap: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .crop-item {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .crop-details {
+                text-align: center;
+                margin-top: 1rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dashboard-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .stat-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .stat-card:nth-child(2) { animation-delay: 0.1s; }
+        .stat-card:nth-child(3) { animation-delay: 0.2s; }
+        .stat-card:nth-child(4) { animation-delay: 0.3s; }
+        .stat-card:nth-child(5) { animation-delay: 0.4s; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--cream);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--light-green);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-green);
+        }
+
+        /* Filter Pills */
+        .filter-pills {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-pill {
+            padding: 0.5rem 1rem;
+            background: var(--cream);
+            border: 1px solid var(--cream);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .filter-pill:hover,
+        .filter-pill.active {
+            background: var(--blue);
+            color: white;
+            border-color: var(--blue);
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-seedling"></i>
+                KisanMandi
+            </div>
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-store"></i>
+                </div>
+                <div class="user-name">Priya Sharma</div>
+                <div class="user-type">Buyer</div>
+            </div>
+        </div>
+
+        <nav class="nav-menu">
+            <div class="nav-item">
+                <a href="/buyer/dashboard" class="nav-link active">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/buyer/browse" class="nav-link">
+                    <i class="fas fa-search"></i>
+                    <span>Browse Crops</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/buyer/orders" class="nav-link">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>My Orders</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/buyer/favorites" class="nav-link">
+                    <i class="fas fa-heart"></i>
+                    <span>Favorites</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/buyer/transactions" class="nav-link">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Transactions</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/buyer/farmers" class="nav-link">
+                    <i class="fas fa-users"></i>
+                    <span>Farmers</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/buyer/market-prices" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Market Prices</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/buyer/profile" class="nav-link">
+                    <i class="fas fa-user-cog"></i>
+                    <span>Profile</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="/logout" class="nav-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Buyer Dashboard
+                </h1>
+                <div class="breadcrumb">Home / Dashboard</div>
+            </div>
+            <div class="top-actions">
+                <div class="search-bar">
+                    <input type="text" class="search-input" placeholder="Search crops, farmers...">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                <button class="notification-bell">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">5</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-content">
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card info">
+                    <div class="stat-header">
+                        <div class="stat-icon info">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">18</div>
+                    <div class="stat-label">Total Orders</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+4 from last month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card success">
+                    <div class="stat-header">
+                        <div class="stat-icon success">
+                            <i class="fas fa-rupee-sign"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">₹85,420</div>
+                    <div class="stat-label">Total Spent</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+18% this month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card warning">
+                    <div class="stat-header">
+                        <div class="stat-icon warning">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Active Shipments</div>
+                    <div class="stat-trend trend-down">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>-1 from yesterday</span>
+                    </div>
+                </div>
+
+                <div class="stat-card primary">
+                    <div class="stat-header">
+                        <div class="stat-icon primary">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">Trusted Farmers</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+2 this week</span>
+                    </div>
+                </div>
+
+                <div class="stat-card purple">
+                    <div class="stat-header">
+                        <div class="stat-icon purple">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">23</div>
+                    <div class="stat-label">Favorite Crops</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+5 recently added</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <a href="/buyer/browse" class="quick-action">
+                    <div class="quick-action-icon browse">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="quick-action-title">Browse Crops</div>
+                    <div class="quick-action-desc">Find fresh crops from farmers</div>
+                </a>
+
+                <a href="/buyer/orders" class="quick-action">
+                    <div class="quick-action-icon orders">
+                        <i class="fas fa-list-alt"></i>
+                    </div>
+                    <div class="quick-action-title">Track Orders</div>
+                    <div class="quick-action-desc">Monitor your purchases</div>
+                </a>
+
+                <a href="/buyer/favorites" class="quick-action">
+                    <div class="quick-action-icon favorites">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="quick-action-title">My Favorites</div>
+                    <div class="quick-action-desc">View saved crops & farmers</div>
+                </a>
+
+                <a href="/buyer/profile" class="quick-action">
+                    <div class="quick-action-icon profile">
+                        <i class="fas fa-user-edit"></i>
+                    </div>
+                    <div class="quick-action-title">Update Profile</div>
+                    <div class="quick-action-desc">Manage your account</div>
+                </a>
+            </div>
+
+            <!-- Main Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Available Crops -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-seedling"></i>
+                            Fresh Crops Available
+                        </h3>
+                        <button class="card-action">
+                            <i class="fas fa-eye"></i>
+                            View All
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="filter-pills">
+                            <div class="filter-pill active">All</div>
+                            <div class="filter-pill">Vegetables</div>
+                            <div class="filter-pill">Grains</div>
+                            <div class="filter-pill">Fruits</div>
+                            <div class="filter-pill">Organic</div>
+                        </div>
+                        
+                        <div class="crop-grid">
+                            <div class="crop-item">
+                                <div class="crop-image">🌾</div>
+                                <div class="crop-info">
+                                    <div class="crop-name">Premium Wheat</div>
+                                    <div class="crop-farmer">
+                                        <i class="fas fa-user"></i> Rajesh Kumar
+                                    </div>
+                                    <div class="crop-location">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        Chandigarh, Punjab
+                                    </div>
+                                </div>
+                                <div class="crop-details">
+                                    <div class="crop-price">₹2,100/quintal</div>
+                                    <div class="crop-quantity">500 kg available</div>
+                                    <div class="crop-actions">
+                                        <button class="btn-small btn-primary-small">
+                                            <i class="fas fa-shopping-cart"></i>
+                                            Buy
+                                        </button>
+                                        <button class="btn-small btn-secondary-small">
+                                            <i class="fas fa-heart"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="crop-item">
+                                <div class="crop-image">🍅</div>
+                                <div class="crop-info">
+                                    <div class="crop-name">Organic Tomatoes</div>
+                                    <div class="crop-farmer">
+                                        <i class="fas fa-user"></i> Sunita Devi
+                                    </div>
+                                    <div class="crop-location">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        Ludhiana, Punjab
+                                    </div>
+                                </div>
+                                <div class="crop-details">
+                                    <div class="crop-price">₹3,200/quintal</div>
+                                    <div class="crop-quantity">300 kg available</div>
+                                    <div class="crop-actions">
+                                        <button class="btn-small btn-primary-small">
+                                            <i class="fas fa-shopping-cart"></i>
+                                            Buy
+                                        </button>
+                                        <button class="btn-small btn-secondary-small">
+                                            <i class="fas fa-heart"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="crop-item">
+                                <div class="crop-image">🍚</div>
+                                <div class="crop-info">
+                                    <div class="crop-name">Basmati Rice</div>
+                                    <div class="crop-farmer">
+                                        <i class="fas fa-user"></i> Harpreet Singh
+                                    </div>
+                                    <div class="crop-location">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        Amritsar, Punjab
+                                    </div>
+                                </div>
+                                <div class="crop-details">
+                                    <div class="crop-price">₹4,500/quintal</div>
+                                    <div class="crop-quantity">800 kg available</div>
+                                    <div class="crop-actions">
+                                        <button class="btn-small btn-primary-small">
+                                            <i class="fas fa-shopping-cart"></i>
+                                            Buy
+                                        </button>
+                                        <button class="btn-small btn-secondary-small">
+                                            <i class="fas fa-heart"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="crop-item">
+                                <div class="crop-image">🥔</div>
+                                <div class="crop-info">
+                                    <div class="crop-name">Fresh Potatoes</div>
+                                    <div class="crop-farmer">
+                                        <i class="fas fa-user"></i> Amit Sharma
+                                    </div>
+                                    <div class="crop-location">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        Jalandhar, Punjab
+                                    </div>
+                                </div>
+                                <div class="crop-details">
+                                    <div class="crop-price">₹1,500/quintal</div>
+                                    <div class="crop-quantity">1200 kg available</div>
+                                    <div class="crop-actions">
+                                        <button class="btn-small btn-primary-small">
+                                            <i class="fas fa-shopping-cart"></i>
+                                            Buy
+                                        </button>
+                                        <button class="btn-small btn-secondary-small">
+                                            <i class="fas fa-heart"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar Cards -->
+                <div>
+                    <!-- Recent Orders -->
+                    <div class="dashboard-card" style="margin-bottom: 1.5rem;">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-shopping-bag"></i>
+                                Recent Orders
+                            </h3>
+                            <button class="card-action">
+                                <i class="fas fa-eye"></i>
+                                View All
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="order-item">
+                                <div class="order-icon" style="background: var(--success-green);">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="order-content">
+                                    <div class="order-title">Wheat Order #1234</div>
+                                    <div class="order-desc">500 kg from Rajesh Kumar</div>
+                                    <div class="order-status status-delivered">Delivered</div>
+                                </div>
+                                <div class="order-amount">
+                                    <div class="order-price">₹10,500</div>
+                                    <div class="order-date">2 days ago</div>
+                                </div>
+                            </div>
+
+                            <div class="order-item">
+                                <div class="order-icon" style="background: var(--blue);">
+                                    <i class="fas fa-truck"></i>
+                                </div>
+                                <div class="order-content">
+                                    <div class="order-title">Tomato Order #1235</div>
+                                    <div class="order-desc">300 kg from Sunita Devi</div>
+                                    <div class="order-status status-processing">Processing</div>
+                                </div>
+                                <div class="order-amount">
+                                    <div class="order-price">₹9,600</div>
+                                    <div class="order-date">1 day ago</div>
+                                </div>
+                            </div>
+
+                            <div class="order-item">
+                                <div class="order-icon" style="background: var(--harvest-gold);">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                                <div class="order-content">
+                                    <div class="order-title">Rice Order #1236</div>
+                                    <div class="order-desc">200 kg from Harpreet Singh</div>
+                                    <div class="order-status status-shipped">Shipped</div>
+                                </div>
+                                <div class="order-amount">
+                                    <div class="order-price">₹9,000</div>
+                                    <div class="order-date">3 hours ago</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Market Trends -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-chart-line"></i>
+                                Market Trends
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="trend-item">
+                                <div class="trend-crop">
+                                    <div class="trend-icon">🌾</div>
+                                    <div class="trend-name">Wheat</div>
+                                </div>
+                                <div class="trend-price">₹2,125</div>
+                                <div class="trend-change trend-up-bg">
+                                    <i class="fas fa-arrow-up"></i> +2.5%
+                                </div>
+                            </div>
+
+                            <div class="trend-item">
+                                <div class="trend-crop">
+                                    <div class="trend-icon">🍚</div>
+                                    <div class="trend-name">Rice</div>
+                                </div>
+                                <div class="trend-price">₹4,200</div>
+                                <div class="trend-change trend-down-bg">
+                                    <i class="fas fa-arrow-down"></i> -1.2%
+                                </div>
+                            </div>
+
+                            <div class="trend-item">
+                                <div class="trend-crop">
+                                    <div class="trend-icon">🍅</div>
+                                    <div class="trend-name">Tomatoes</div>
+                                </div>
+                                <div class="trend-price">₹3,400</div>
+                                <div class="trend-change trend-up-bg">
+                                    <i class="fas fa-arrow-up"></i> +5.8%
+                                </div>
+                            </div>
+
+                            <div class="trend-item">
+                                <div class="trend-crop">
+                                    <div class="trend-icon">🧅</div>
+                                    <div class="trend-name">Onions</div>
+                                </div>
+                                <div class="trend-price">₹2,800</div>
+                                <div class="trend-change trend-up-bg">
+                                    <i class="fas fa-arrow-up"></i> +3.1%
+                                </div>
+                            </div>
+
+                            <div class="trend-item">
+                                <div class="trend-crop">
+                                    <div class="trend-icon">🥔</div>
+                                    <div class="trend-name">Potatoes</div>
+                                </div>
+                                <div class="trend-price">₹1,650</div>
+                                <div class="trend-change trend-down-bg">
+                                    <i class="fas fa-arrow-down"></i> -0.8%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(e) {
+            const sidebar = document.getElementById('sidebar');
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            
+            if (window.innerWidth <= 768 && !sidebar.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                sidebar.classList.remove('active');
+            }
+        });
+
+        // Search functionality
+        document.querySelector('.search-input').addEventListener('focus', function() {
+            this.style.width = window.innerWidth > 768 ? '300px' : '180px';
+        });
+
+        document.querySelector('.search-input').addEventListener('blur', function() {
+            this.style.width = window.innerWidth > 768 ? '250px' : '150px';
+        });
+
+        // Filter pills functionality
+        document.querySelectorAll('.filter-pill').forEach(pill => {
+            pill.addEventListener('click', function() {
+                document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Filter logic would go here
+                const category = this.textContent.toLowerCase();
+                console.log('Filtering by:', category);
+            });
+        });
+
+        // Animated counters for stats
+        function animateCounter(element, target, duration = 2000) {
+            const start = 0;
+            const increment = target / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                
+                if (element.textContent.includes('₹')) {
+                    element.textContent = '₹' + Math.floor(current).toLocaleString();
+                } else {
+                    element.textContent = Math.floor(current);
+                }
+            }, 16);
+        }
+
+        // Initialize counters on page load
+        window.addEventListener('load', () => {
+            const statValues = document.querySelectorAll('.stat-value');
+            statValues.forEach(stat => {
+                const text = stat.textContent;
+                let target;
+                
+                if (text.includes('₹')) {
+                    target = parseInt(text.replace('₹', '').replace(',', ''));
+                } else {
+                    target = parseInt(text);
+                }
+                
+                stat.textContent = text.includes('₹') ? '₹0' : '0';
+                
+                setTimeout(() => {
+                    animateCounter(stat, target);
+                }, 500);
+            });
+        });
+
+        // Crop action buttons
+        document.querySelectorAll('.btn-primary-small').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const cropItem = this.closest('.crop-item');
+                const cropName = cropItem.querySelector('.crop-name').textContent;
+                const cropPrice = cropItem.querySelector('.crop-price').textContent;
+                const farmer = cropItem.querySelector('.crop-farmer').textContent;
+                
+                alert(`Adding to cart:\n${cropName}\nPrice: ${cropPrice}\nFarmer: ${farmer}`);
+                
+                // Add loading state
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-check"></i> Added';
+                    this.style.background = 'var(--success-green)';
+                }, 1000);
+            });
+        });
+
+        // Favorite buttons
+        document.querySelectorAll('.btn-secondary-small').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const icon = this.querySelector('i');
+                
+                if (icon.classList.contains('fa-heart')) {
+                    icon.classList.remove('fa-heart');
+                    icon.classList.add('fa-heart');
+                    this.style.background = 'var(--error-red)';
+                    this.style.color = 'white';
+                } else {
+                    icon.classList.remove('fa-heart');
+                    icon.classList.add('fa-heart');
+                    this.style.background = 'var(--cream)';
+                    this.style.color = 'var(--dark-gray)';
+                }
+            });
+        });
+
+        // Crop item clicks
+        document.querySelectorAll('.crop-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const cropName = this.querySelector('.crop-name').textContent;
+                const farmer = this.querySelector('.crop-farmer').textContent;
+                const location = this.querySelector('.crop-location').textContent;
+                const price = this.querySelector('.crop-price').textContent;
+                
+                alert(`Crop Details:\n${cropName}\nFarmer: ${farmer}\nLocation: ${location}\nPrice: ${price}\n\nClick to view full details.`);
+            });
+        });
+
+        // Order item clicks
+        document.querySelectorAll('.order-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const title = this.querySelector('.order-title').textContent;
+                const desc = this.querySelector('.order-desc').textContent;
+                const status = this.querySelector('.order-status').textContent;
+                const price = this.querySelector('.order-price').textContent;
+                
+                alert(`Order Details:\n${title}\n${desc}\nStatus: ${status}\nAmount: ${price}`);
+            });
+        });
+
+        // Notification bell functionality
+        document.querySelector('.notification-bell').addEventListener('click', function() {
+            alert('You have 5 new notifications:\n1. New wheat listing from Rajesh Kumar\n2. Your tomato order is ready for pickup\n3. Price alert: Rice prices increased\n4. New organic farmer joined\n5. Payment received confirmation');
+        });
+
+        // Card action buttons
+        document.querySelectorAll('.card-action').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const cardTitle = this.closest('.card-header').querySelector('.card-title').textContent.trim();
+                if (cardTitle.includes('Fresh Crops Available')) {
+                    window.location.href = '/buyer/browse';
+                } else if (cardTitle.includes('Recent Orders')) {
+                    window.location.href = '/buyer/orders';
+                }
+            });
+        });
+
+        // Quick action clicks
+        document.querySelectorAll('.quick-action').forEach(action => {
+            action.addEventListener('click', function(e) {
+                if (!this.href) {
+                    e.preventDefault();
+                    const title = this.querySelector('.quick-action-title').textContent;
+                    alert('Navigating to: ' + title);
+                }
+            });
+        });
+
+        // Sidebar navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (this.getAttribute('href').startsWith('/')) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all links
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    // For demo purposes, show alert
+                    const linkText = this.querySelector('span').textContent;
+                    alert(`Navigating to: ${linkText}`);
+                }
+            });
+        });
+
+        // Real-time updates simulation
+        setInterval(() => {
+            // Simulate notification updates
+            const badge = document.querySelector('.notification-badge');
+            const currentCount = parseInt(badge.textContent);
+            if (Math.random() > 0.97) { // 3% chance every interval
+                badge.textContent = currentCount + 1;
+                badge.style.animation = 'pulse 0.5s ease';
+                setTimeout(() => {
+                    badge.style.animation = '';
+                }, 500);
+            }
+        }, 5000);
+
+        // Add pulse animation for notifications
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.2); }
+                100% { transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Search with suggestions
+        const searchInput = document.querySelector('.search-input');
+        const suggestions = ['Wheat', 'Rice', 'Tomatoes', 'Potatoes', 'Onions', 'Organic crops', 'Rajesh Kumar', 'Sunita Devi'];
+        
+        searchInput.addEventListener('input', function() {
+            const value = this.value.toLowerCase();
+            if (value.length > 2) {
+                const matches = suggestions.filter(s => s.toLowerCase().includes(value));
+                if (matches.length > 0) {
+                    console.log('Search suggestions:', matches);
+                    // In a real app, show dropdown with suggestions
+                }
+            }
+        });
+
+        // Trend item interactions
+        document.querySelectorAll('.trend-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const cropName = this.querySelector('.trend-name').textContent;
+                const price = this.querySelector('.trend-price').textContent;
+                const change = this.querySelector('.trend-change').textContent;
+                
+                alert(`Market Trend:\nCrop: ${cropName}\nCurrent Price: ${price}/quintal\nChange: ${change}\n\nClick to view detailed price history and analytics.`);
+            });
+        });
+
+        // Add hover effects for interactive elements
+        document.querySelectorAll('.crop-item, .order-item, .trend-item').forEach(item => {
+            item.style.cursor = 'pointer';
+        });
+
+        // Responsive handling
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                document.getElementById('sidebar').classList.remove('active');
+            }
+            
+            // Adjust search input width
+            const searchInput = document.querySelector('.search-input');
+            if (window.innerWidth <= 768) {
+                searchInput.style.width = '150px';
+            } else {
+                searchInput.style.width = '250px';
+            }
+        });
+
+        // Loading states for better UX
+        function showLoading(element) {
+            const originalText = element.innerHTML;
+            element.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+            element.disabled = true;
+            
+            setTimeout(() => {
+                element.innerHTML = originalText;
+                element.disabled = false;
+            }, 1500);
+        }
+
+        // Apply loading to card action buttons
+        document.querySelectorAll('.card-action').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                showLoading(this);
+            });
+        });
+
+        // Simulate live price updates
+        setInterval(() => {
+            const trendPrices = document.querySelectorAll('.trend-price');
+            trendPrices.forEach(price => {
+                if (Math.random() > 0.95) { // 5% chance
+                    const currentPrice = parseInt(price.textContent.replace('₹', '').replace(',', ''));
+                    const change = Math.random() > 0.5 ? 
+                        Math.floor(Math.random() * 50) + 1 : 
+                        -(Math.floor(Math.random() * 50) + 1);
+                    const newPrice = currentPrice + change;
+                    
+                    price.textContent = '₹' + newPrice.toLocaleString();
+                    price.style.animation = 'pulse 0.5s ease';
+                    setTimeout(() => {
+                        price.style.animation = '';
+                    }, 500);
+                }
+            });
+        }, 10000);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + K to focus search
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                document.querySelector('.search-input').focus();
+            }
+            
+            // Escape to close sidebar on mobile
+            if (e.key === 'Escape' && window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('active');
+            }
+        });
+
+        // Initialize tooltips (if you want to add them later)
+        function initTooltips() {
+            const elements = document.querySelectorAll('[data-tooltip]');
+            elements.forEach(el => {
+                el.addEventListener('mouseenter', function() {
+                    console.log('Tooltip:', this.getAttribute('data-tooltip'));
+                });
+            });
+        }
+
+        // Performance optimization - lazy load content
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('loaded');
+                }
+            });
+        });
+
+        // Observe elements for lazy loading
+        document.querySelectorAll('.dashboard-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        console.log('KisanMandi Buyer Dashboard loaded successfully! 🌾');
+    </script>
+</body>
+</html>

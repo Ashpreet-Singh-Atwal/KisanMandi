@@ -1,0 +1,931 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - KisanMandi</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-green: #2d5016;
+            --secondary-green: #4a7c59;
+            --harvest-gold: #f4a261;
+            --warm-brown: #8b4513;
+            --light-green: #90a955;
+            --cream: #faf9f7;
+            --error-red: #e74c3c;
+            --success-green: #27ae60;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--cream) 0%, #e8f5e8 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Background decorative elements */
+        .bg-decoration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        .wheat-pattern {
+            position: absolute;
+            top: 20%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 10c-5 0-10 5-10 10v20c0 5 5 10 10 10s10-5 10-10V20c0-5-5-10-10-10zm0 40c-5 0-10 5-10 10v20c0 5 5 10 10 10s10-5 10-10V60c0-5-5-10-10-10z" fill="%23d4b08a"/></svg>') repeat;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .left-panel {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .left-content {
+            text-align: center;
+            color: white;
+            z-index: 2;
+            padding: 2rem;
+        }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .logo i {
+            color: var(--harvest-gold);
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .feature-list {
+            text-align: left;
+            max-width: 400px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .feature-item i {
+            color: var(--harvest-gold);
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .right-panel {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: var(--cream);
+        }
+
+        .login-form {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .form-header h2 {
+            color: var(--primary-green);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .user-type-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .user-type {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .user-type:hover {
+            border-color: var(--light-green);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-type.selected {
+            border-color: var(--primary-green);
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+            color: white;
+        }
+
+        .user-type i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--harvest-gold);
+        }
+
+        .user-type.selected i {
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--primary-green);
+            font-weight: 500;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(45, 80, 22, 0.1);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: var(--primary-green);
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-green);
+        }
+
+        .forgot-password {
+            color: var(--secondary-green);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            color: var(--primary-green);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(45, 80, 22, 0.3);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .divider {
+            text-align: center;
+            margin: 2rem 0;
+            position: relative;
+            color: #999;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e0e0e0;
+            z-index: 1;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .social-login {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .google-btn {
+            color: #db4437;
+        }
+
+        .facebook-btn {
+            color: #3b5998;
+        }
+
+        .register-link {
+            text-align: center;
+            color: #666;
+        }
+
+        .register-link a {
+            color: var(--primary-green);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: var(--error-red);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .success-message {
+            color: var(--success-green);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        /* Loading state */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .login-btn.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .left-panel {
+                min-height: 30vh;
+            }
+
+            .right-panel {
+                padding: 1rem;
+            }
+
+            .login-form {
+                padding: 2rem;
+            }
+
+            .logo {
+                font-size: 2rem;
+            }
+
+            .social-login {
+                flex-direction: column;
+            }
+
+            .user-type-selector {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-decoration">
+        <div class="wheat-pattern"></div>
+    </div>
+
+    <div class="container">
+        <div class="left-panel">
+            <div class="left-content">
+                <div class="logo">
+                    <i class="fas fa-seedling"></i>
+                    KisanMandi
+                </div>
+                <p class="tagline">Connecting Farmers Directly with Buyers</p>
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <i class="fas fa-handshake"></i>
+                        <span>Direct Trade Without Middlemen</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-chart-line"></i>
+                        <span>MSP Guaranteed Pricing</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>Mobile-Friendly Platform</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Secure Transactions</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <form class="login-form" id="loginForm" method="POST" action="/login">
+                <div class="form-header">
+                    <h2>Welcome Back</h2>
+                    <p>Sign in to your account to continue</p>
+                </div>
+
+                <div class="user-type-selector">
+                    <div class="user-type" data-type="farmer" tabindex="0">
+                        <i class="fas fa-tractor"></i>
+                        <div>Farmer</div>
+                    </div>
+                    <div class="user-type" data-type="buyer" tabindex="0">
+                        <i class="fas fa-store"></i>
+                        <div>Buyer</div>
+                    </div>
+                </div>
+
+                <input type="hidden" id="userType" name="userType" required />
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <div class="input-container">
+                        <i class="fas fa-phone input-icon"></i>
+                        <input
+                            type="text"
+                            id="phone"
+                            name="phone"
+                            class="form-control"
+                            placeholder="Enter your phone number"
+                            required
+                        />
+                    </div>
+                    <div class="error-message" id="phoneError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-container">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            class="form-control"
+                            placeholder="Enter your password"
+                            required
+                        />
+                        <i class="fas fa-eye password-toggle" id="passwordToggle"></i>
+                    </div>
+                    <div class="error-message" id="passwordError"></div>
+                </div>
+
+                <div class="form-options">
+                    <div class="remember-me">
+                        <input type="checkbox" id="remember" name="remember" />
+                        <label for="remember">Remember me</label>
+                    </div>
+                    <a href="/forgot-password" class="forgot-password">Forgot Password?</a>
+                </div>
+
+                <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
+
+                <div class="success-message" id="successMessage"></div>
+                <div class="error-message" id="generalError"></div>
+
+                <div class="divider"><span>or continue with</span></div>
+
+                <div class="social-login">
+                    <button type="button" class="social-btn google-btn" id="googleLogin">
+                        <i class="fab fa-google"></i>Google
+                    </button>
+                    <button type="button" class="social-btn facebook-btn" id="facebookLogin">
+                        <i class="fab fa-facebook-f"></i>Facebook
+                    </button>
+                </div>
+
+                <div class="register-link">
+                    Don't have an account? <a href="/register">Create one now</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const userTypes = document.querySelectorAll('.user-type');
+        const userTypeInput = document.getElementById('userType');
+        const loginBtn = document.getElementById('loginBtn');
+
+        function validatePhone(phone) {
+            const re = /^[0-9]{10}$/;
+            return re.test(phone);
+        }
+
+        function validateForm() {
+            const phone = document.getElementById('phone').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const userType = userTypeInput.value;
+            let isValid = true;
+
+            // Clear errors
+            document.querySelectorAll('.error-message').forEach((el) => {
+                el.style.display = 'none';
+                el.textContent = '';
+            });
+
+            if (!userType) {
+                document.getElementById('generalError').textContent = 'Please select your user type';
+                document.getElementById('generalError').style.display = 'block';
+                isValid = false;
+            }
+
+            if (!phone) {
+                document.getElementById('phoneError').textContent = 'Phone number is required';
+                document.getElementById('phoneError').style.display = 'block';
+                isValid = false;
+            } else if (!validatePhone(phone)) {
+                document.getElementById('phoneError').textContent = 'Please enter a valid 10-digit phone number';
+                document.getElementById('phoneError').style.display = 'block';
+                isValid = false;
+            }
+
+            if (!password) {
+                document.getElementById('passwordError').textContent = 'Password is required';
+                document.getElementById('passwordError').style.display = 'block';
+                isValid = false;
+            } else if (password.length < 6) {
+                document.getElementById('passwordError').textContent = 'Password must be at least 6 characters';
+                document.getElementById('passwordError').style.display = 'block';
+                isValid = false;
+            }
+
+            loginBtn.disabled = !isValid;
+            return isValid;
+        }
+
+        userTypes.forEach((type) => {
+            type.addEventListener('click', () => {
+                userTypes.forEach((t) => t.classList.remove('selected'));
+                type.classList.add('selected');
+                userTypeInput.value = type.dataset.type;
+                validateForm();
+            });
+            // Accessibility
+            type.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    type.click();
+                }
+            });
+            type.setAttribute('tabindex', '0');
+        });
+
+        document.getElementById('phone').addEventListener('input', validateForm);
+        document.getElementById('password').addEventListener('input', validateForm);
+
+        document.getElementById('passwordToggle').addEventListener('click', () => {
+            const passwordField = document.getElementById('password');
+            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordField.setAttribute('type', type);
+
+            const icon = document.getElementById('passwordToggle');
+            icon.classList.toggle('fa-eye');
+            icon.classList.toggle('fa-eye-slash');
+        });
+
+        // document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        //     e.preventDefault();
+        //     if (!validateForm()) return;
+
+        //     loginBtn.classList.add('loading');
+        //     loginBtn.textContent = '';
+
+        //     const phone = document.getElementById('phone').value.trim();
+        //     const password = document.getElementById('password').value.trim();
+        //     const userType = userTypeInput.value;
+
+        //     let url = '';
+        //     if (userType === 'farmer') {
+        //         url = '/api/farmers/login';
+        //     } else if (userType === 'buyer') {
+        //         url = '/api/buyers/login';
+        //     }
+
+        //     try {
+        //         const response = await fetch(url, {
+        //             method: 'POST',
+        //             headers: {
+        //                 'Content-Type': 'application/json',
+        //             },
+        //             body: JSON.stringify({ phone, password }),
+        //         });
+
+        //         const result = await response.json();
+
+        //         if (response.ok) {
+        //             document.getElementById('successMessage').textContent = result.message || 'Login successful! Redirecting...';
+        //             document.getElementById('successMessage').style.display = 'block';
+        //             setTimeout(() => {
+        //                 if (userType === 'farmer') {
+        //                     window.location.href = '/farmer/dashboard';
+        //                 } else if (userType === 'buyer') {
+        //                     window.location.href = '/buyer/dashboard';
+        //                 }
+        //             }, 1500);
+        //         } else {
+        //             throw new Error(result.message || 'Login failed.');
+        //         }
+        //     } catch (error) {
+        //         document.getElementById('generalError').textContent = error.message;
+        //         document.getElementById('generalError').style.display = 'block';
+        //     } finally {
+        //         loginBtn.classList.remove('loading');
+        //         loginBtn.textContent = 'Sign In';
+        //     }
+        // });
+
+        // Social login buttons
+        document.getElementById('googleLogin').addEventListener('click', () => {
+            if (!userTypeInput.value) {
+                document.getElementById('generalError').textContent = 'Please select your user type first';
+                document.getElementById('generalError').style.display = 'block';
+                return;
+            }
+            window.location.href = `/auth/google?userType=${userTypeInput.value}`;
+        });
+
+        document.getElementById('facebookLogin').addEventListener('click', () => {
+            if (!userTypeInput.value) {
+                document.getElementById('generalError').textContent = 'Please select your user type first';
+                document.getElementById('generalError').style.display = 'block';
+                return;
+            }
+            window.location.href = `/auth/facebook?userType=${userTypeInput.value}`;
+        });
+
+        validateForm();
+    </script>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - KisanMandi</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary-green: #2d5016;
+            --secondary-green: #4a7c59;
+            --harvest-gold: #f4a261;
+            --cream: #faf9f7;
+            --error-red: #e74c3c;
+            --success-green: #27ae60;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--cream) 0%, #e8f5e8 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container { display: flex; min-height: 100vh; }
+
+        .left-panel {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .right-panel {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .login-form {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .form-header h2 {
+            color: var(--primary-green);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p { color: #666; margin-bottom: 2rem; }
+
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { font-weight: 600; color: var(--primary-green); }
+
+        .input-container { position: relative; }
+
+        .form-control {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            background: #fafafa;
+            transition: 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: var(--primary-green);
+            background: white;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+        .login-btn:hover { transform: translateY(-2px); }
+
+        .error-message {
+            color: var(--error-red);
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .register-link a {
+            color: var(--primary-green);
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+        <div style="text-align:center; max-width:350px;">
+            <div class="logo" style="font-size:3rem; margin-bottom:1rem;">
+                <i class="fas fa-seedling" style="color:var(--harvest-gold);"></i>
+                KisanMandi
+            </div>
+            <p style="font-size:1.2rem;">Connecting Farmers & Buyers</p>
+            <p style="margin-top:1rem; opacity:0.8;">
+                Fresh produce marketplace with direct farm-to-market access.
+            </p>
+        </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+        <form class="login-form" method="POST" action="/login">
+
+            <div class="form-header">
+                <h2>Welcome Back</h2>
+                <p>Please login to continue</p>
+            </div>
+
+            <!-- Phone -->
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <div class="input-container">
+                    <i class="fas fa-phone input-icon"></i>
+                    <input type="text" id="phone" name="phone" class="form-control"
+                           placeholder="Enter 10-digit phone number" required>
+                </div>
+                <div class="error-message" id="phoneError"></div>
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-container">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="password" name="password" class="form-control"
+                           placeholder="Enter password" required>
+                    <i class="fas fa-eye password-toggle" id="togglePassword"></i>
+                </div>
+                <div class="error-message" id="passwordError"></div>
+            </div>
+
+            <!-- Hidden role field (automatic from backend DB) -->
+            <input type="hidden" name="userType" id="userType">
+
+            <button type="submit" class="login-btn">Sign In</button>
+
+            <div class="error-message" id="generalError"></div>
+
+            <div class="register-link">
+                Don't have an account? <a href="/register">Create one</a>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+
+<script>
+    // Password toggle
+    document.getElementById("togglePassword").addEventListener("click", () => {
+        const pass = document.getElementById("password");
+        pass.type = pass.type === "password" ? "text" : "password";
+    });
+</script>
+
+</body>
+</html>

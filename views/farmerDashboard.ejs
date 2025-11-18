@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Dashboard - KisanMandi</title>
+
+    <!-- icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Chart.js (single include) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* ---------- Core (kept similar to your design) ---------- */
+        :root{
+            --primary-green:#2d5016;
+            --secondary-green:#4a7c59;
+            --harvest-gold:#f4a261;
+            --light-green:#90a955;
+            --cream:#faf9f7;
+            --dark-gray:#2c3e50;
+            --light-gray:#95a5a6;
+            --success-green:#27ae60;
+            --error-red:#e74c3c;
+            --blue:#3498db;
+        }
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--cream) 0%, #f0f8f0 100%);
+            color:var(--dark-gray);
+            min-height:100vh;
+        }
+
+        /* Sidebar */
+        .sidebar{
+            position:fixed;left:0;top:0;height:100vh;width:280px;
+            background:linear-gradient(135deg,var(--primary-green),var(--secondary-green));
+            color:white;overflow-y:auto;padding-bottom:2rem;z-index:1000;
+            box-shadow:4px 0 20px rgba(0,0,0,0.08);
+        }
+        .sidebar-header{padding:2rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.06);text-align:center;}
+        .logo{font-size:1.8rem;font-weight:700;display:flex;align-items:center;gap:.5rem;justify-content:center}
+        .user-avatar{width:56px;height:56px;border-radius:50%;background:var(--harvest-gold);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;color:white}
+        .user-name{font-weight:600}
+        .user-type{opacity:.85;font-size:.9rem}
+
+        .nav-menu{padding:1rem 0}
+        .nav-item{margin:0.2rem 0}
+        .nav-link{display:flex;align-items:center;gap:1rem;padding:0.95rem 1.2rem;color:rgba(255,255,255,0.9);text-decoration:none;border-left:3px solid transparent}
+        .nav-link:hover,.nav-link.active{background:rgba(255,255,255,0.06);border-left-color:var(--harvest-gold)}
+        .nav-link i{width:20px}
+
+        /* Main */
+        .main-content{margin-left:280px;min-height:100vh;transition:margin-left .25s}
+        .top-bar{background:white;padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 10px rgba(0,0,0,0.06);position:sticky;top:0;z-index:90}
+        .page-title{font-size:1.6rem;color:var(--primary-green);display:flex;align-items:center;gap:.8rem}
+        .breadcrumb{color:var(--light-gray);font-size:.9rem}
+        .top-actions{display:flex;gap:.8rem;align-items:center}
+
+        .notification-bell{position:relative;background:var(--cream);border-radius:50%;padding:.6rem;border:none;cursor:pointer}
+        .notification-badge{position:absolute;top:-6px;right:-6px;background:var(--error-red);color:white;border-radius:50%;width:20px;height:20px;font-size:.7rem;display:flex;align-items:center;justify-content:center}
+
+        /* Content */
+        .dashboard-content{padding:1.75rem}
+        .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.2rem;margin-bottom:1.5rem}
+        .stat-card{background:white;border-radius:12px;padding:1rem;box-shadow:0 10px 30px rgba(0,0,0,0.06);position:relative;overflow:hidden}
+        .stat-card::before{content:'';height:4px;left:0;right:0;top:0;position:absolute;background:var(--harvest-gold)}
+        .stat-icon{width:46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:white}
+        .stat-icon.success{background:var(--success-green)}
+        .stat-icon.primary{background:var(--primary-green)}
+        .stat-icon.warning{background:var(--harvest-gold)}
+        .stat-icon.info{background:var(--blue)}
+        .stat-value{font-size:1.6rem;font-weight:800;color:var(--primary-green);margin-top:.5rem}
+        .stat-label{color:var(--light-gray);margin-top:.25rem;font-size:.9rem}
+        .stat-hint{font-size:.85rem;color:var(--light-gray);margin-top:.45rem}
+
+        /* Grid */
+        .dashboard-grid{display:grid;grid-template-columns:2fr 1fr;gap:1.25rem;margin-bottom:1.5rem}
+        .dashboard-card{background:white;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.06)}
+        .card-header{padding:1rem;border-bottom:1px solid #f3f3f3;display:flex;justify-content:space-between;align-items:center}
+        .card-title{font-weight:600;color:var(--primary-green)}
+        .card-action{background:var(--harvest-gold);color:white;padding:.45rem .8rem;border-radius:8px;text-decoration:none;border:none;cursor:pointer;display:inline-flex;gap:.4rem;align-items:center}
+        .card-body{padding:1rem}
+
+        /* crop list */
+        .crop-item{display:flex;align-items:center;gap:1rem;padding:.8rem;border-radius:10px;border:1px solid #f0f0f0;margin-bottom:.8rem}
+        .crop-image{width:64px;height:64px;border-radius:10px;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:1.6rem}
+        .crop-info{flex:1}
+        .crop-name{font-weight:700;color:var(--primary-green)}
+        .crop-details{color:var(--light-gray);font-size:.9rem;display:flex;gap:.6rem;flex-wrap:wrap}
+        .crop-price{font-weight:800;color:var(--success-green);text-align:right}
+        .crop-status{padding:.2rem .5rem;border-radius:20px;font-weight:700;font-size:.8rem}
+
+        /* activities */
+        .activity-item{display:flex;gap:1rem;padding:.6rem 0;border-bottom:1px solid #f3f3f3;align-items:center}
+        .activity-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white}
+        .activity-icon.info{background:var(--blue)}
+        .activity-icon.success{background:var(--success-green)}
+        .activity-icon.default{background:var(--primary-green)}
+        .activity-title{font-weight:700;color:var(--primary-green)}
+        .activity-desc{color:var(--light-gray)}
+
+        /* price chart */
+        .price-chart-wrapper{height:220px}
+
+        /* responsive */
+        @media (max-width:1000px){ .dashboard-grid{grid-template-columns:1fr} .main-content{margin-left:0} .sidebar{position:relative;height:auto;width:100%;} }
+        @media (max-width:600px){ .stats-grid{grid-template-columns:1fr} .price-chart-wrapper{height:180px} }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-seedling" style="color:var(--harvest-gold)"></i>
+                KisanMandi
+            </div>
+
+            <div style="margin-top:10px;text-align:center">
+                <div class="user-avatar"><i class="fas fa-user"></i></div>
+                <div class="user-name"><%= (farmer && farmer.name) ? farmer.name : 'Farmer' %></div>
+                <div class="user-type">Farmer - <%= (farmer && farmer.farmLocation) ? farmer.farmLocation : 'Location N/A' %></div>
+            </div>
+        </div>
+
+        <nav class="nav-menu">
+            <div class="nav-item"><a href="/farmer/dashboard" class="nav-link active"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></div>
+            <div class="nav-item"><a href="/farmer/crops" class="nav-link"><i class="fas fa-seedling"></i><span>My Crops</span></a></div>
+            <div class="nav-item"><a href="/farmer/listings" class="nav-link"><i class="fas fa-list"></i><span>Active Listings</span></a></div>
+            <div class="nav-item"><a href="/farmer/orders" class="nav-link"><i class="fas fa-shopping-cart"></i><span>Orders</span></a></div>
+            <div class="nav-item"><a href="/farmer/transactions" class="nav-link"><i class="fas fa-money-bill-wave"></i><span>Transactions</span></a></div>
+            <div class="nav-item"><a href="/farmer/market-prices" class="nav-link"><i class="fas fa-chart-line"></i><span>Market Prices</span></a></div>
+            <div class="nav-item"><a href="/farmer/weather" class="nav-link"><i class="fas fa-cloud-sun"></i><span>Weather</span></a></div>
+            <div class="nav-item"><a href="/farmer/profile" class="nav-link"><i class="fas fa-user-cog"></i><span>Profile</span></a></div>
+            <div class="nav-item"><a href="/logout" class="nav-link"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></div>
+        </nav>
+    </div>
+
+    <!-- Main -->
+    <div class="main-content">
+        <div class="top-bar">
+            <div>
+                <button id="mobileMenuBtn" class="mobile-menu-btn" style="display:none;border:none;background:none;font-size:1.1rem"><i class="fas fa-bars" style="color:var(--primary-green)"></i></button>
+                <div class="page-title"><i class="fas fa-tachometer-alt"></i> Dashboard</div>
+                <div class="breadcrumb" style="margin-top:6px">Home / Dashboard</div>
+            </div>
+
+            <div class="top-actions">
+                <button class="notification-bell" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge"><%= (stats && stats.unreadNotifications) ? stats.unreadNotifications : 0 %></span>
+                </button>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header" style="display:flex;align-items:center;justify-content:space-between">
+                        <div style="display:flex;align-items:center;gap:.6rem">
+                            <div class="stat-icon success"><i class="fas fa-seedling"></i></div>
+                            <div>
+                                <div class="stat-value" data-value="<%= (stats && stats.activeListings) ? stats.activeListings : 0 %>"><%= (stats && typeof stats.activeListings !== 'undefined') ? stats.activeListings : 0 %></div>
+                                <div class="stat-label">Active Crop Listings</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-hint">Total crops currently visible to buyers.</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header" style="display:flex;align-items:center;justify-content:space-between">
+                        <div style="display:flex;align-items:center;gap:.6rem">
+                            <div class="stat-icon primary"><i class="fas fa-rupee-sign"></i></div>
+                            <div>
+                                <div class="stat-value" data-value="<%= (stats && stats.totalRevenue) ? stats.totalRevenue : 0 %>">₹<%= (stats && stats.totalRevenue) ? (Number(stats.totalRevenue).toLocaleString('en-IN')) : '0' %></div>
+                                <div class="stat-label">Total Revenue</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-hint">Total confirmed order value for all time.</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header" style="display:flex;align-items:center;justify-content:space-between">
+                        <div style="display:flex;align-items:center;gap:.6rem">
+                            <div class="stat-icon warning"><i class="fas fa-clock"></i></div>
+                            <div>
+                                <div class="stat-value" data-value="<%= (stats && stats.pendingOrders) ? stats.pendingOrders : 0 %>"><%= (stats && typeof stats.pendingOrders !== 'undefined') ? stats.pendingOrders : 0 %></div>
+                                <div class="stat-label">Pending Orders</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-hint">Orders placed but not yet completed.</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header" style="display:flex;align-items:center;justify-content:space-between">
+                        <div style="display:flex;align-items:center;gap:.6rem">
+                            <div class="stat-icon info"><i class="fas fa-star"></i></div>
+                            <div>
+                                <div class="stat-value" data-value="<%= (stats && stats.avgRating) ? stats.avgRating : 0 %>">
+                                    <% if (stats && typeof stats.avgRating !== 'undefined' && stats.avgRating !== 0) { %>
+                                        <%= Number(stats.avgRating).toFixed(1) %>
+                                    <% } else { %>
+                                        N/A
+                                    <% } %>
+                                </div>
+                                <div class="stat-label">Average Rating</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-hint">Buyer feedback (coming soon if not implemented).</div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div style="margin-bottom:1.25rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+                <a href="/farmer/crops/add" class="card-action" style="display:inline-flex;align-items:center;gap:.6rem"><i class="fas fa-plus"></i> Add New Crop</a>
+                <a href="/farmer/crops" class="card-action" style="background:var(--blue)">View All Crops</a>
+                <a href="/farmer/orders" class="card-action" style="background:var(--primary-green)">View Orders</a>
+            </div>
+
+            <!-- Main Grid -->
+            <div class="dashboard-grid">
+                <!-- Left column -->
+                <div>
+                    <!-- Recent Crops -->
+                    <div class="dashboard-card" style="margin-bottom:1rem">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fas fa-seedling"></i> Recent Crop Listings</div>
+                            <a href="/farmer/crops" class="card-action" style="background:var(--harvest-gold)"><i class="fas fa-eye"></i> View All</a>
+                        </div>
+                        <div class="card-body">
+                            <% if (!recentCrops || recentCrops.length === 0) { %>
+                                <p style="color:var(--light-gray)">No crops listed yet. <a href="/farmer/crops/add">Add your first crop</a>.</p>
+                            <% } else { %>
+                                <% recentCrops.forEach(function(crop){ %>
+                                    <div class="crop-item">
+                                        <div class="crop-image">
+                                            <% if (crop.image) { %>
+                                                <img src="<%= crop.image %>" alt="<%= crop.name %>" style="width:100%;height:100%;object-fit:cover;border-radius:8px" />
+                                            <% } else { %>
+                                                🌾
+                                            <% } %>
+                                        </div>
+
+                                        <div class="crop-info">
+                                            <div class="crop-name"><%= crop.name %></div>
+                                            <div class="crop-details">
+                                                <% if (crop.quantity || crop.quantity === 0) { %><span><%= crop.quantity %> kg</span><% } %>
+                                                <% if (crop.grade) { %><span>Grade: <%= crop.grade %></span><% } %>
+                                                <% if (crop.location) { %><span><%= crop.location %></span><% } %>
+                                                <% if (crop.category) { %><span><%= crop.category.charAt(0).toUpperCase()+crop.category.slice(1) %></span><% } %>
+                                                <% if (crop.createdAt) { %><span>Listed: <%= (crop.createdAt instanceof Date) ? crop.createdAt.toLocaleDateString('en-IN') : new Date(crop.createdAt).toLocaleDateString('en-IN') %></span><% } %>
+                                            </div>
+                                        </div>
+
+                                        <div style="text-align:right;min-width:140px">
+                                            <div class="crop-price">₹<%= (crop.price || 0) %>/quintal</div>
+                                            <div class="crop-status" style="margin-top:6px">
+                                                <% var s = (crop.status || 'active').toLowerCase(); %>
+                                                <span style="padding:.25rem .6rem;border-radius:18px;background:<%= s==='active' ? 'rgba(39,174,96,0.08)' : s==='pending' ? 'rgba(244,162,97,0.08)' : 'rgba(52,152,219,0.06)' %>;color:<%= s==='active' ? 'var(--success-green)' : s==='pending' ? 'var(--harvest-gold)' : 'var(--blue)' %>"><%= s.charAt(0).toUpperCase()+s.slice(1) %></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }); %>
+
+                                <div style="text-align:right;margin-top:8px">
+                                    <a href="/farmer/crops" style="text-decoration:none;color:var(--primary-green)">View all crops →</a>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <!-- Market Insights / Price Chart -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fas fa-chart-line"></i> Market Insights & Price Trends</div>
+                            <a href="/farmer/market-prices" class="card-action" style="background:var(--harvest-gold)"><i class="fas fa-eye"></i> View All</a>
+                        </div>
+                        <div class="card-body">
+                            <% if (recentCrops && recentCrops.length > 0) { %>
+                                <div class="price-chart-wrapper">
+                                    <canvas id="priceChart"></canvas>
+                                </div>
+                                <p style="color:var(--light-gray);margin-top:.6rem">Showing price trend based on your latest crop listings.</p>
+                            <% } else { %>
+                                <div style="text-align:center;color:var(--light-gray)">
+                                    <i class="fas fa-chart-line" style="font-size:2rem;margin-bottom:.5rem"></i>
+                                    <div>No crop data available to show price trends.</div>
+                                    <div style="margin-top:.35rem;font-size:.9rem">Add at least one crop to see market insights.</div>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+
+<br>
+
+                                    <!-- MSP Rates Card -->
+<div class="dashboard-card" style="margin-bottom:1.5rem;">
+  <div class="card-header">
+    <h3 class="card-title">
+      <i class="fas fa-rupee-sign"></i>
+      MSP (Minimum Support Prices)
+    </h3>
+    <a class="card-action" href="/farmer/market-prices" style="background:var(--primary-green)">Full MSP List</a>
+  </div>
+
+  <div class="card-body">
+    <% if (mspList && mspList.length) { %>
+      <div style="display:flex;gap:1rem;align-items:flex-start;flex-wrap:wrap;">
+        <div style="flex:1 1 260px; min-width:260px;">
+          <table style="width:100%; border-collapse:collapse; font-size:0.95rem;">
+            <thead>
+              <tr style="text-align:left; color:var(--light-gray); font-size:0.85rem;">
+                <th style="padding:.5rem .25rem">Crop</th>
+                <th style="padding:.5rem .25rem">MSP (₹/quintal)</th>
+                <th style="padding:.5rem .25rem; text-align:right">Your Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% mspList.forEach(function(item){ %>
+                <tr>
+                  <td style="padding:.45rem .25rem; font-weight:600; color:var(--primary-green)"><%= item.name %></td>
+                  <td style="padding:.45rem .25rem;">
+                    <% if (item.msp != null) { %>
+                      ₹<%= item.msp.toLocaleString('en-IN') %>
+                    <% } else { %>
+                      N/A
+                    <% } %>
+                  </td>
+                  <td style="padding:.45rem .25rem; text-align:right; color: var(--light-gray);">
+                    <% if (item.listedPrice!=null) { %>
+                      ₹<%= Number(item.listedPrice).toLocaleString('en-IN') %>
+                    <% } else { %>
+                      — 
+                    <% } %>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="flex:1 1 240px; min-width:240px; height:180px;">
+          <canvas id="mspChart" style="width:100%; height:100%;"></canvas>
+        </div>
+      </div>
+
+      <p style="margin-top:.6rem; color:var(--light-gray); font-size:0.85rem;">
+        MSP reference (static). If your listed price is below MSP, buyers may find it attractive — you may also consult local mandi rates.
+      </p>
+    <% } else { %>
+      <p style="color:var(--light-gray)">MSP data not available.</p>
+    <% } %>
+  </div>
+</div>
+                </div>
+
+                <!-- Right column -->
+                <div>
+                    <!-- Weather -->
+                    <div class="dashboard-card" style="margin-bottom:1rem">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fas fa-cloud-sun"></i> Weather Today</div>
+                        </div>
+                        <div class="card-body">
+                            <% if (weather) { %>
+                                <div style="background:linear-gradient(135deg,var(--blue),#74b9ff);padding:1rem;border-radius:10px;color:white;text-align:center">
+                                    <div style="font-size:2.4rem"><i class="fas fa-sun"></i></div>
+                                    <div style="font-size:1.6rem;font-weight:700;margin-top:.4rem"><%= Math.round(weather.temp || 0) %>°C</div>
+                                    <div style="text-transform:capitalize;margin-top:.25rem;opacity:.95"><%= weather.desc || '' %></div>
+                                    <div style="display:flex;gap:1rem;justify-content:center;margin-top:.65rem">
+                                        <div style="text-align:center">
+                                            <div style="font-weight:700"><%= weather.humidity || 'N/A' %>%</div>
+                                            <div style="opacity:.85;font-size:.85rem">Humidity</div>
+                                        </div>
+                                        <div style="text-align:center">
+                                            <div style="font-weight:700"><%= weather.wind || 'N/A' %> km/h</div>
+                                            <div style="opacity:.85;font-size:.85rem">Wind</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% } else { %>
+                                <p style="text-align:center;color:var(--light-gray)">Weather data is currently unavailable. Check your API key or try again later.</p>
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activities -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fas fa-history"></i> Recent Activities</div>
+                        </div>
+                        <div class="card-body">
+                            <% if (!recentActivities || recentActivities.length === 0) { %>
+                                <p>No recent activities to show.</p>
+                            <% } else { %>
+                                <% recentActivities.forEach(function(act){ %>
+                                    <div class="activity-item">
+                                        <div class="activity-icon <%= act.type || 'default' %>">
+                                            <i class="fas fa-<%= act.icon || 'check' %>"></i>
+                                        </div>
+                                        <div style="flex:1">
+                                            <div class="activity-title"><%= act.title %></div>
+                                            <div class="activity-desc"><%= act.desc %></div>
+                                        </div>
+                                        <div style="color:var(--light-gray);font-size:.85rem"><%= act.time %></div>
+                                    </div>
+                                <% }); %>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div> <!-- dashboard-content -->
+    </div> <!-- main-content -->
+
+    <!-- Inject recentCrops safely for client-side chart code -->
+    <script id="recentCropsJson" type="application/json"><%- JSON.stringify(recentCrops || []) %></script>
+    <script id="mspData" type="application/json"><%= JSON.stringify(mspList || []) %></script>
+
+
+    <script>
+        // -------------------- Utility: safe parse data --------------------
+        function safeParseRecentCrops() {
+            try {
+                const raw = document.getElementById('recentCropsJson').textContent || "[]";
+                return JSON.parse(raw);
+            } catch (e) {
+                console.error("recentCrops JSON parse failed", e);
+                return [];
+            }
+        }
+
+        // -------------------- Animate stat counters --------------------
+        function animateCounters() {
+            document.querySelectorAll('.stat-value').forEach(el => {
+                const raw = el.getAttribute('data-value');
+                const target = Number(raw) || 0;
+                const isMoney = el.textContent.trim().startsWith('₹');
+                let current = 0;
+                const duration = 800;
+                const step = Math.max(1, Math.floor(target / (duration / 16)));
+                const timer = setInterval(() => {
+                    current += step;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    if (isMoney) {
+                        el.textContent = '₹' + Math.floor(current).toLocaleString('en-IN');
+                    } else {
+                        el.textContent = (Number(el.getAttribute('data-value')) % 1 !== 0) ? current.toFixed(1) : Math.floor(current);
+                    }
+                }, 16);
+            });
+        }
+
+        // -------------------- Chart initialization --------------------
+        function initPriceChart() {
+            const crops = safeParseRecentCrops();
+            if (!crops || crops.length === 0) return;
+
+            const labels = crops.map(c => {
+                const dt = c.createdAt ? new Date(c.createdAt) : null;
+                const dateStr = dt && !isNaN(dt) ? dt.toLocaleDateString('en-IN') : 'N/A';
+                return (c.name || 'Unknown') + ' (' + dateStr + ')';
+            });
+
+            const values = crops.map(c => Number(c.price) || 0);
+
+            const ctx = document.getElementById('priceChart');
+            if (!ctx) return;
+            new Chart(ctx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Price (₹ per quintal)',
+                        data: values,
+                        tension: 0.35,
+                        pointRadius: 4,
+                        borderWidth: 2,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { title: { display: true, text: 'Crop (date listed)' } },
+                        y: { title: { display: true, text: 'Price (₹)' }, beginAtZero: true }
+                    },
+                    plugins: { legend: { display: true } }
+                }
+            });
+        }
+
+        (function(){
+    try {
+      const raw = document.getElementById('mspData')?.textContent || '[]';
+      const mspList = JSON.parse(raw);
+
+      // Chart.js bar chart
+      const ctx = document.getElementById('mspChart')?.getContext?.('2d');
+      if (ctx && mspList.length) {
+        const labels = mspList.map(i => i.name.length > 12 ? i.name.slice(0,12)+'…' : i.name);
+        const msps = mspList.map(i => i.msp || 0);
+
+        // create a lightweight palette based on CSS vars (fallback values)
+        const getCssVar = (name, fallback) => getComputedStyle(document.documentElement).getPropertyValue(name) || fallback;
+
+        const borderColor = getCssVar('--primary-green', '#2d5016').trim();
+        const fillColor   = 'rgba(45,80,22,0.07)';
+
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [{
+              label: 'MSP (₹ per quintal)',
+              data: msps,
+              borderWidth: 1,
+              borderColor: borderColor,
+              backgroundColor: fillColor,
+              barThickness: 18
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: { enabled: true }
+            },
+            scales: {
+              x: { ticks: { maxRotation: 0, minRotation: 0 }, grid: { display:false } },
+              y: { beginAtZero: false }
+            }
+          }
+        });
+      }
+    } catch (err) {
+      console.error("MSP chart error:", err);
+    }
+  })();
+
+        // -------------------- Simple interactions --------------------
+        document.addEventListener('DOMContentLoaded', function(){
+            animateCounters();
+            initPriceChart();
+
+            // Notification bell demo
+            document.querySelectorAll('.notification-bell').forEach(b => {
+                b.addEventListener('click', () => {
+                    alert('Notifications feature can be wired to real data later.\nCheck Orders or Transactions for detailed items.');
+                });
+            });
+
+            // Crop click handler (quick details)
+            document.querySelectorAll('.crop-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const name = item.querySelector('.crop-name')?.textContent || 'Crop';
+                    const price = item.querySelector('.crop-price')?.textContent || 'N/A';
+                    alert(`${name}\nPrice: ${price}\nClick View All to manage crops.`);
+                });
+            });
+
+            // Sidebar mobile toggle (if you enable mobile hamburger)
+            const mobileBtn = document.getElementById('mobileMenuBtn');
+            if (mobileBtn) {
+                mobileBtn.addEventListener('click', () => document.getElementById('sidebar').classList.toggle('active'));
+            }
+        });
+    </script>
+</body>
+</html>

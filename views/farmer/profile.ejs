@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Profile - KisanMandi</title>
+
+<style>
+body { background:#f4f7fb; margin:0; font-family:Poppins; }
+.header { background:#1abc9c; padding:20px; color:white; font-size:28px; font-weight:600; }
+
+.container { width:90%; margin:25px auto; }
+.back-btn {
+    background:#149174; padding:10px 20px; border-radius:8px;
+    text-decoration:none; color:white; font-weight:500;
+}
+
+.profile-card {
+    background:white;
+    width:60%;
+    margin:auto;
+    padding:30px;
+    border-radius:18px;
+    box-shadow:0 8px 24px rgba(0,0,0,.12);
+}
+
+.row { margin-bottom:18px; }
+.label { color:#7f8c8d; font-size:14px; }
+.value { font-size:20px; font-weight:600; color:#2c3e50; }
+
+</style>
+</head>
+
+<body>
+
+<div class="header">👤 Profile</div>
+
+<div class="container">
+    <a href="/farmer/dashboard" class="back-btn">⬅ Back</a>
+
+    <div class="profile-card">
+        <div class="row">
+            <div class="label">Name</div>
+            <div class="value"><%= farmer.name %></div>
+        </div>
+
+        <div class="row">
+            <div class="label">Phone</div>
+            <div class="value"><%= farmer.phone %></div>
+        </div>
+
+        <div class="row">
+            <div class="label">Location</div>
+            <div class="value"><%= farmer.farmLocation || "Not set" %></div>
+        </div>
+
+        <div class="row">
+            <div class="label">Role</div>
+            <div class="value">Farmer</div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Crop - KisanMandi</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f3f7f0;
+            padding: 20px;
+        }
+
+        .form-box {
+            width: 90%;
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-top: 8px solid #2d5016;
+        }
+
+        label { font-weight: bold; color: #2d5016; }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #bbb;
+            margin-top: 5px;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            width: 100%;
+            background: #4a7c59;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 15px;
+            color: white;
+            background: #2d5016;
+            padding: 8px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+
+        .preview {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 10px;
+            background: #eee;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<a href="/farmer/dashboard" class="back-btn">⬅ Back to Dashboard</a>
+
+<div class="form-box">
+
+    <h2>Edit Crop</h2>
+
+    <form action="/farmer/crops/edit/<%= crop._id %>" method="POST" enctype="multipart/form-data">
+
+        <% if (crop.image) { %>
+            <img src="<%= crop.image %>" class="preview">
+        <% } %>
+
+        <label>Crop Name</label>
+        <input type="text" name="name" value="<%= crop.name %>" required>
+
+        <label>Price (₹)</label>
+        <input type="number" name="price" value="<%= crop.price %>" required>
+
+        <label>Quantity (kg)</label>
+        <input type="number" name="quantity" value="<%= crop.quantity %>" required>
+
+        <label>Grade</label>
+        <input type="text" name="grade" value="<%= crop.grade %>">
+
+        <label>Location</label>
+        <input type="text" name="location" value="<%= crop.location %>">
+
+        <label>Category</label>
+        <select name="category" required>
+            <option value="vegetables" <%= crop.category==='vegetables' ? 'selected' : '' %>>Vegetables</option>
+            <option value="grains" <%= crop.category==='grains' ? 'selected' : '' %>>Grains</option>
+            <option value="fruits" <%= crop.category==='fruits' ? 'selected' : '' %>>Fruits</option>
+            <option value="organic" <%= crop.category==='organic' ? 'selected' : '' %>>Organic</option>
+            <option value="others" <%= crop.category==='others' ? 'selected' : '' %>>Others</option>
+        </select>
+
+        <label>Status</label>
+        <select name="status">
+            <option value="active" <%= crop.status==='active'?'selected':'' %>>Active</option>
+            <option value="pending" <%= crop.status==='pending'?'selected':'' %>>Pending</option>
+            <option value="sold" <%= crop.status==='sold'?'selected':'' %>>Sold</option>
+        </select>
+
+        <label>Replace Image</label>
+        <input type="file" name="image">
+
+        <button class="btn">Update Crop</button>
+
+    </form>
+
+</div>
+
+</body>
+</html>

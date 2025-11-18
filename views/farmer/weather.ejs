@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Weather Forecast - KisanMandi</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: "Poppins", sans-serif;
+        background: #f4f7fb;
+    }
+
+    .header {
+        background: #3498db;
+        padding: 20px 30px;
+        color: white;
+        font-size: 26px;
+        font-weight: 600;
+    }
+
+    .container {
+        width: 90%;
+        margin: 25px auto;
+    }
+
+    .back-btn {
+        display: inline-block;
+        background: #2980b9;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        text-decoration: none;
+        margin-bottom: 20px;
+    }
+
+    .weather-box {
+        background: white;
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        width: 70%;
+        margin: auto;
+        text-align: center;
+    }
+
+    .location {
+        font-size: 24px;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 10px;
+    }
+
+    .temperature {
+        font-size: 56px;
+        font-weight: 700;
+        color: #3498db;
+        margin: 10px 0;
+    }
+
+    .condition {
+        font-size: 22px;
+        font-weight: 500;
+        color: #34495e;
+        margin-bottom: 25px;
+    }
+
+    .details {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        margin-top: 20px;
+    }
+
+    .detail-box {
+        background: #ecf6ff;
+        padding: 15px 25px;
+        border-radius: 10px;
+        font-size: 18px;
+        color: #2c3e50;
+        text-align: center;
+    }
+
+    .error-msg {
+        font-size: 22px;
+        color: #e74c3c;
+        text-align: center;
+        margin-top: 40px;
+        font-weight: 600;
+    }
+
+</style>
+
+</head>
+<body>
+
+    <div class="header">🌤 Weather Forecast</div>
+
+    <div class="container">
+
+        <a href="/farmer/dashboard" class="back-btn">⬅ Back to Dashboard</a>
+
+        <% if (!weather) { %>
+            <p class="error-msg">❌ Weather data unavailable. Check your API key or network.</p>
+        <% } else { %>
+
+        <div class="weather-box">
+
+            <div class="location">
+                <%= farmer.farmLocation || "Your Area" %>
+            </div>
+
+            <div class="temperature">
+                <%= weather.temp %>°C
+            </div>
+
+            <div class="condition">
+                <%= weather.condition %>
+            </div>
+
+            <div class="details">
+                <div class="detail-box">
+                    💧 Humidity<br>
+                    <strong><%= weather.humidity %>%</strong>
+                </div>
+
+                <div class="detail-box">
+                    🌬 Wind Speed<br>
+                    <strong><%= weather.wind %> km/h</strong>
+                </div>
+
+                <div class="detail-box">
+                    🌡 Feels Like<br>
+                    <strong><%= weather.feels_like %>°C</strong>
+                </div>
+            </div>
+
+        </div>
+
+        <% } %>
+
+    </div>
+
+</body>
+</html>

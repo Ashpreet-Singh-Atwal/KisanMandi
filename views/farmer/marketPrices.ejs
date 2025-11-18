@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Market Prices - KisanMandi</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: "Poppins", sans-serif;
+        background: #f4f6f9;
+    }
+    .header {
+        background: #2ecc71;
+        padding: 20px 30px;
+        color: white;
+        font-size: 26px;
+        font-weight: 600;
+    }
+    .container {
+        width: 90%;
+        margin: 25px auto;
+    }
+    .back-btn {
+        display: inline-block;
+        background: #27ae60;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        text-decoration: none;
+        margin-bottom: 20px;
+    }
+    .price-card {
+        background: white;
+        padding: 18px 22px;
+        border-radius: 12px;
+        margin-bottom: 18px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: 0.2s ease;
+    }
+    .price-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 18px rgba(0,0,0,0.12);
+    }
+    .crop-name {
+        font-size: 20px;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+    .crop-market {
+        font-size: 18px;
+        font-weight: 500;
+        color: #27ae60;
+    }
+</style>
+</head>
+
+<body>
+
+    <div class="header">📉 Market Prices (Today)</div>
+
+    <div class="container">
+
+        <a href="/farmer/dashboard" class="back-btn">⬅ Back to Dashboard</a>
+
+        <% if (market && market.length > 0) { %>
+
+            <% market.forEach(item => { %>
+                <div class="price-card">
+                    <div class="crop-name"><%= item.crop %></div>
+                    <div class="crop-market">₹ <%= item.price %> / quintal</div>
+                </div>
+            <% }) %>
+
+        <% } else { %>
+            <p style="color:#7f8c8d;font-size:18px;">No market data available.</p>
+        <% } %>
+
+    </div>
+
+</body>
+</html>

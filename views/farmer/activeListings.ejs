@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Active Listings - KisanMandi</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f3f7fc;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Top Green Header */
+        .top-header {
+            background: #25a244;
+            color: white;
+            padding: 25px 40px;
+            font-size: 28px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .container {
+            padding: 40px 60px; /* 👈 Adds spacing so nothing overlaps header */
+        }
+
+        .back-btn {
+            background: #1b7c33;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 15px;
+            display: inline-block;
+            margin-bottom: 25px;
+            transition: .2s;
+        }
+
+        .back-btn:hover {
+            background: #145a25;
+        }
+
+        .listing-card {
+            background: white;
+            padding: 20px;
+            width: 90%;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .listing-text {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .sub-text {
+            color: #444;
+            font-size: 14px;
+        }
+
+        .status-badge {
+            background: #d3f9d8;
+            color: #2b8a3e;
+            padding: 5px 12px;
+            border-radius: 12px;
+            margin-top: 8px;
+            display: inline-block;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .btn-edit {
+            background: #2f80ed;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+
+        .btn-edit:hover { background: #1765c0; }
+
+        .btn-delete {
+            background: #e63946;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+
+        .btn-delete:hover { background: #b91c1c; }
+
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="top-header">
+        🌾 Active Listings
+    </div>
+
+    <div class="container">
+
+        <a href="/farmer/dashboard" class="back-btn">⬅ Back</a>
+
+        <% if (listings.length === 0) { %>
+            <div style="font-size:18px; color:#555;">No active listings available.</div>
+        <% } %>
+
+        <% listings.forEach(crop => { %>
+            <div class="listing-card">
+                
+                <div>
+                    <div class="listing-text"><%= crop.name %></div>
+                    <div class="sub-text">₹ <%= crop.price %> / quintal • <%= crop.quantity %> kg</div>
+                    <span class="status-badge">Active</span>
+                </div>
+
+                <div>
+                    <a href="/farmer/crops/edit/<%= crop._id %>" class="btn-edit">Edit</a>
+                    <a href="/farmer/crops/delete/<%= crop._id %>" class="btn-delete">Delete</a>
+                </div>
+
+            </div>
+        <% }) %>
+
+    </div>
+
+</body>
+</html>
